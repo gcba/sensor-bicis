@@ -7,7 +7,9 @@ char e = '*';
 char a = '*';
 char r = '*';
 
-const float umb =  1.1; // tolerancia del cambio de presion de 10 %
+const int DEBUG = 1;
+
+const float umb =  1.22; // tolerancia del cambio de presion de 10 %
 int ma;
 int the_tally; //total amount of sensings.
 int latest_minute;
@@ -17,6 +19,7 @@ int the_max = 0;
 int is_measuring = 0;
 int count_this = 0;
 int strike_number = 0;
+int lectura = 0;
 float wheel_spacing = 1.0668;
 float first_wheel = 0.0000000;
 float second_wheel= 0.0000000;
@@ -57,7 +60,10 @@ void httpRequest(String data) {
 
 void setup() {
   pinMode(A0, INPUT);
-  ma = analogRead(A0);
+  for(int i = 0; i<10; i++){
+    lectura = analogRead(A0);
+    if (lectura > ma) ma = lectura;
+  }
   Ethernet.begin(mac, ip,dnsserver,gw);
   Serial.begin(9600);
   delay(1000);
@@ -93,38 +99,42 @@ void loop() {
   lastConnected = client.connected();
   
   //1 - TUBE IS PRESSURIZED INITIALLY
-  int lectura = analogRead(A0);
+  lectura = analogRead(A0);
   float diferencia = (float)lectura / (float)ma;
   if (diferencia > umb) {
+  if (DEBUG) {
+    Serial.print("ma: ");
+    Serial.print(ma);
+    Serial.print(" lectura: ");
+    Serial.print(lectura);
+    Serial.print(" diferencia: ");
+    Serial.println(diferencia);
+  }
     if (strike_number == 0 && is_measuring == 0) { // FIRST HIT
       Serial.println("");
       Serial.println("Rueda delantera. ");
       first_wheel = millis(); 
       is_measuring = 1;
     }
-    else{
-      Serial.print(strike_number);
-      Serial.print("#");
-      Serial.print(is_measuring);
-      }
     if (strike_number == 1 && is_measuring == 1) { // SECOND HIT
       Serial.println("Rueda trasera.");
       second_wheel = millis();
       is_measuring = 0;
     }
   }else{
-    ma = (ma*4+lectura)/5;
+    ma = (ma*3+lectura)/4;
   }
-  if (diferencia < umb){
-    Serial.print("_");
-  }
-  else if (diferencia > umb && diferencia < 1.2){
-    Serial.print("-");
-  }
-  else if (diferencia > 1.2){
-    Serial.print("'");
-  }
-  
+  /**/
+  /*if (diferencia < umb){*/
+  /* Serial.print("_");*/
+  /*}*/
+  /*else if (diferencia > umb && diferencia < (umb + 0.10)){*/
+  /*  Serial.print("-");*/
+  /*}*/
+  /*else if (diferencia >= (umb + 0.10 )){*/
+  /*  Serial.print("'");*/
+  /*}*/
+  /**/
   
   
   
