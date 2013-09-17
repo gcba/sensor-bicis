@@ -14,7 +14,6 @@ db = sqlite3.connect(DATABASE)
 cur = db.cursor()
 
 epoch = datetime(1970, 1, 1)
-maxID = cur.execute("select max(id) from bicis").fetchall()[0][0] + 1
 boardDebug = False
 # ipdb.set_trace()
 
@@ -38,9 +37,9 @@ def sensor():
         else:
             print request.data
             dato = json.loads(request.data)
-            ahora = datetime.now() - epoch
-            cur.execute("insert into bicis values(" + maxID + "," + dato["tiempo"] + "," + ahora + "," + dato["pasadas"] + ");")
-            maxID += 1
+            ahora = datetime.utcnow().strftime("%s") 
+            maxID = 1 + cur.execute("select max(id) from bicis").fetchall()[0][0] 
+            cur.execute("insert into bicis values( %s , %s ,  %s, %s)" % (maxID,dato["tiempo"],  ahora , dato["pasadas"] ) )
             return "clear"
 
 @app.route("/totem", methods=['POST', 'GET'])
