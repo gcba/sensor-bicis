@@ -14,7 +14,7 @@ cur = db.cursor()
 epoch = datetime(1970, 1, 1)
 maxID = cur.execute("select max(id) from bicis").fetchall()[0][0] + 1
 boardDebug = False
-ipdb.set_trace()
+# ipdb.set_trace()
 
 @app.route("/")
 def index():
