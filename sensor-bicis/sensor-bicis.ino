@@ -9,25 +9,26 @@ char r = '*';
 
 const int DEBUG = 1;
 
-const float umb = 1.25;		// tolerancia del cambio de presion de 10 %
-int ma;
+const float umb = 1.12;		// tolerancia del cambio de presion de 10 %
+float ma;
 int conteo;		
 int latest_minute;
 int delayRueda = 50;
 int timeout = 2000;
 int lectura = 0;
-float wheel_spacing = 0.0010668;
+float dEntreEjes = 0.0010668;
 long ultimaLectura = 0;
 long ahora = 0;
 
 
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
 
-IPAddress ip(172, 29, 41, 9);
+IPAddress ip(172, 29, 41, 10);
 IPAddress dnsserver(172, 29, 41, 2);
 IPAddress gw(172, 29, 41, 2);
 EthernetClient client;
 byte server[] = { 10, 10, 10, 202 };
+//byte server[] = { 172, 29, 41, 12};
 
 unsigned long lastConnectionTime = 0;
 boolean lastConnected = false;
@@ -36,10 +37,10 @@ const unsigned long postingInterval = 6000;
 "   _____  _____          ____\r\n" "  / ____|/ ____|   /\\   |  _ \\   /\\\r\n" " | |  __| |       /  \\  | |_) | /  \\\r\n" " | | |_ | |      / /\\ \\ |  _ < / /\\ \\\r\n" " | |__| | |____ / ____ \\| |_) / ____ \\\r\n" "  \\_____|\\_____/_/   _\\_\\____/_/    \\_\\        ______ _           _         __        _\r\n" "  / ____|     | |   (_)                       |  ____| |         | |       /_/       (_)\r\n" " | |  __  ___ | |__  _  ___ _ __ _ __   ___   | |__  | | ___  ___| |_ _ __ ___  _ __  _  ___ ___\r\n" " | | |_ |/ _ \\| '_ \\| |/ _ \\ '__| '_ \\ / _ \\  |  __| | |/ _ \\/ __| __| '__/ _ \\| '_ \\| |/ __/ _ \\\r\n" " | |__| | (_) | |_) | |  __/ |  | | | | (_) | | |____| |  __/ (__| |_| | | (_) | | | | | (_| (_) |\r\n" "  \\_____|\\___/|_.__/|_|\\___|_|  |_| |_|\\___/  |______|_|\\___|\\___|\\__|_|  \\___/|_| |_|_|\\___\\___/\r\n" "\r\n";
 */
 void httpRequest(String data){
-  if (client.connect(server, 5001)) {;
+  if (client.connect(server, 8080)) {;
   	Serial.println("\nconnecting...");
   	client.println("POST /sensor HTTP/1.0");
-  	client.println("Host: 10.0.0.1");
+  	client.println("Host: 10.10.10.202");
   	client.println("User-Agent: arduino-ethernet");
   	client.print("Content-Length: ");
   	client.println(data.length());
@@ -55,15 +56,19 @@ void httpRequest(String data){
 
 void setup(){
   pinMode(A0, INPUT);
-  for (int i = 0; i < 10; i++) {
-    lectura = analogRead(A0);
-    if (lectura > ma){
-      ma = lectura;
-    }
-  }
   Ethernet.begin(mac, ip, dnsserver, gw);
   Serial.begin(9600);
   delay(1000);
+
+  for (int i = 0; i < 30; i++) {
+    lectura = analogRead(A0);
+    Serial.print(lectura);
+    Serial.print("\t");
+    Serial.println(ma);
+    ma = ma + lectura;
+  }
+  ma=ma/30;
+  Serial.println(ma);
   Serial.print("My IP address: ");
   Serial.println(Ethernet.localIP());
   Serial.print("Promedio inicial: ");
@@ -89,7 +94,8 @@ void loop(){
     }
     if (!client.connected()	
     && (millis() - lastConnectionTime > postingInterval) 
-    && conteo > 0) {
+    && conteo > 0
+    ) {
     	client.stop();
     	String reporte =
     	    "{\"id\":1,\"tiempo\":" + String(millis()) + ",\"pasadas\":" +
@@ -98,19 +104,31 @@ void loop(){
     }
     lastConnected = client.connected();
 
+
+
+//SENSADO
     lectura = analogRead(A0);
     float diferencia = (float) lectura / (float) ma;
     if (diferencia > umb) {
     	ahora = millis();
       if (ahora-ultimaLectura < timeout  &&  ahora-ultimaLectura > delayRueda){
 		    conteo++;
-        Serial.println("bici: " + String(dEntreEjes*3600000/(ahora-ultimaLectura)) + "km/h");
+        Serial.print("bici: ");
+        Serial.print(dEntreEjes*3600000/(ahora-ultimaLectura));
+        Serial.println("km/h");
       }
       ultimaLectura = millis();
     }else{
       ma = (ma * 30 + lectura) / 31;
     }
+    /*CODIGO VIEJO
 
+
+    Serial.print(lectura);
+    Serial.print("\t");
+    Serial.print(ma);
+    Serial.print("\t");
+    Serial.println(diferencia);*/
     /*
     //1 - TUBE IS PRESSURIZED INITIALLY
     lectura = analogRead(A0);
