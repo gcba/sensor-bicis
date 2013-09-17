@@ -11,20 +11,14 @@ const int DEBUG = 1;
 
 const float umb = 1.25;		// tolerancia del cambio de presion de 10 %
 int ma;
-int the_tally;			//total amount of sensings.
+int conteo;		
 int latest_minute;
-int the_wheel_delay = 50;	//number of milliseconds to create accurate readings for cars. prevents bounce.
-int car_timeout = 3000;
-int the_max = 0;
-int is_measuring = 0;
-int count_this = 0;
-int strike_number = 0;
+int delayRueda = 50;
+int timeout = 2000;
 int lectura = 0;
-float wheel_spacing = 1.0668;
-float first_wheel = 0.0000000;
-float second_wheel = 0.0000000;
-float wheel_time = 0.0000000;
-float the_speed = 0.0000000;
+float wheel_spacing = 0.0010668;
+long ultimaLectura = 0;
+long ahora = 0;
 
 
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
@@ -41,72 +35,83 @@ const unsigned long postingInterval = 6000;
 /*char  banner[] = ""
 "   _____  _____          ____\r\n" "  / ____|/ ____|   /\\   |  _ \\   /\\\r\n" " | |  __| |       /  \\  | |_) | /  \\\r\n" " | | |_ | |      / /\\ \\ |  _ < / /\\ \\\r\n" " | |__| | |____ / ____ \\| |_) / ____ \\\r\n" "  \\_____|\\_____/_/   _\\_\\____/_/    \\_\\        ______ _           _         __        _\r\n" "  / ____|     | |   (_)                       |  ____| |         | |       /_/       (_)\r\n" " | |  __  ___ | |__  _  ___ _ __ _ __   ___   | |__  | | ___  ___| |_ _ __ ___  _ __  _  ___ ___\r\n" " | | |_ |/ _ \\| '_ \\| |/ _ \\ '__| '_ \\ / _ \\  |  __| | |/ _ \\/ __| __| '__/ _ \\| '_ \\| |/ __/ _ \\\r\n" " | |__| | (_) | |_) | |  __/ |  | | | | (_) | | |____| |  __/ (__| |_| | | (_) | | | | | (_| (_) |\r\n" "  \\_____|\\___/|_.__/|_|\\___|_|  |_| |_|\\___/  |______|_|\\___|\\___|\\__|_|  \\___/|_| |_|_|\\___\\___/\r\n" "\r\n";
 */
-void httpRequest(String data)
-{
-    if (client.connect(server, 5001)) {;
-	Serial.println("\nconnecting...");
-	client.println("POST /sensor HTTP/1.0");
-	client.println("Host: 10.0.0.1");
-	client.println("User-Agent: arduino-ethernet");
-	client.print("Content-Length: ");
-	client.println(data.length());
-	client.println("Content-Type: application/json");
-	client.println("Connection: close");
-	client.println();
-	client.println(data);
-    } else {
-	client.stop();
-    }
-    lastConnectionTime = millis();
+void httpRequest(String data){
+  if (client.connect(server, 5001)) {;
+  	Serial.println("\nconnecting...");
+  	client.println("POST /sensor HTTP/1.0");
+  	client.println("Host: 10.0.0.1");
+  	client.println("User-Agent: arduino-ethernet");
+  	client.print("Content-Length: ");
+  	client.println(data.length());
+  	client.println("Content-Type: application/json");
+  	client.println("Connection: close");
+  	client.println();
+  	client.println(data);
+  }else{
+    client.stop();
+  }
+  lastConnectionTime = millis();
 }
 
-void setup()
-{
-    pinMode(A0, INPUT);
-    for (int i = 0; i < 10; i++) {
-	lectura = analogRead(A0);
-	if (lectura > ma)
-	    ma = lectura;
+void setup(){
+  pinMode(A0, INPUT);
+  for (int i = 0; i < 10; i++) {
+    lectura = analogRead(A0);
+    if (lectura > ma){
+      ma = lectura;
     }
-    Ethernet.begin(mac, ip, dnsserver, gw);
-    Serial.begin(9600);
-    delay(1000);
-    //Serial.println(banner);
-    Serial.print("My IP address: ");
-    Serial.println(Ethernet.localIP());
-    Serial.print("Promedio inicial: ");
-    Serial.println(ma);
+  }
+  Ethernet.begin(mac, ip, dnsserver, gw);
+  Serial.begin(9600);
+  delay(1000);
+  Serial.print("My IP address: ");
+  Serial.println(Ethernet.localIP());
+  Serial.print("Promedio inicial: ");
+  Serial.println(ma);
 }
 
-void loop()
-{
-    if (client.available()) {
-	c = l;
-	l = e;
-	e = a;
-	a = r;
-	r = client.read();
-	if (c == 'c' && l == 'l' && e == 'e' && a == 'a' && r == 'r') {
-	    the_tally = 0;
-	    Serial.print("cleared");
-	}
+void loop(){
+  if (client.available()) {
+  	c = l;
+  	l = e;
+  	e = a;
+  	a = r;
+  	r = client.read();
+  	if (c == 'c' && l == 'l' && e == 'e' && a == 'a' && r == 'r') {
+  	    conteo = 0;
+  	    Serial.print("cleared");
+  	  }
     }
     lastConnected = client.connected();
     if (!client.connected() && lastConnected) {
-	Serial.println("disconnecting.");
-	client.stop();
+  	  Serial.println("disconnecting.");
+  	  client.stop();
     }
-    if (!client.connected()
-	&& (millis() - lastConnectionTime > postingInterval)
-	&& the_tally > 0) {
-	client.stop();
-	String reporte =
-	    "{\"id\":1,\"tiempo\":" + String(millis()) + ",\"pasadas\":" +
-	    String(the_tally) + "}";
-	httpRequest(reporte);
+    if (!client.connected()	
+    && (millis() - lastConnectionTime > postingInterval) 
+    && conteo > 0) {
+    	client.stop();
+    	String reporte =
+    	    "{\"id\":1,\"tiempo\":" + String(millis()) + ",\"pasadas\":" +
+    	     String(conteo) + "}";
+      httpRequest(reporte);
     }
     lastConnected = client.connected();
 
+    lectura = analogRead(A0);
+    float diferencia = (float) lectura / (float) ma;
+    if (diferencia > umb) {
+    	ahora = millis();
+      if (ahora-ultimaLectura < timeout  &&  ahora-ultimaLectura > delayRueda){
+		    conteo++;
+        Serial.println("bici: " + String(dEntreEjes*3600000/(ahora-ultimaLectura)) + "km/h");
+      }
+      ultimaLectura = millis();
+    }else{
+      ma = (ma * 30 + lectura) / 31;
+    }
+
+    /*
     //1 - TUBE IS PRESSURIZED INITIALLY
     lectura = analogRead(A0);
     float diferencia = (float) lectura / (float) ma;
@@ -130,20 +135,9 @@ void loop()
 	    second_wheel = millis();
 	    is_measuring = 0;
 	}
-    } else {
+    }else{
 	ma = (ma * 30 + lectura) / 31;
     }
-     /**/
-	/*if (diferencia < umb){ */
-	/* Serial.print("_"); */
-	/*} */
-	/*else if (diferencia > umb && diferencia < (umb + 0.10)){ */
-	/*  Serial.print("-"); */
-	/*} */
-	/*else if (diferencia >= (umb + 0.10 )){ */
-	/*  Serial.print("'"); */
-	/*} */
-	 /**/
 	//2 - TUBE IS STILL PRESSURIZED
 	while (analogRead(A0) > the_max && is_measuring == 1) {	//is being pressed, in all cases. to measure the max pressure.
 	the_max = analogRead(A0);
@@ -165,10 +159,10 @@ void loop()
     //4 - PRESSURE READING IS ACCEPTED AND RECORDED
     if (diferencia < umb && ((count_this == 1 && is_measuring == 0)
 			     || ((millis() - first_wheel) > car_timeout) && is_measuring == 1)) {	//has been released for enough time.
-	the_tally++;
+	conteo++;
 	Serial.print("Pico maximo = ");
 	Serial.println(the_max);
-	Serial.println("Pasaron " + String(the_tally) + " bicicletas");
+	Serial.println("Pasaron " + String(conteo) + " bicicletas");
 	//Serial.print("time between wheels = ");
 	wheel_time = ((second_wheel - first_wheel) / 3600000);
 	//Serial.println(wheel_time);
@@ -177,7 +171,7 @@ void loop()
 	    Serial.print("Velocidad: ");
 	    Serial.print(the_speed);
 	    Serial.println(" km/h");
-	} else {
+	}else{
 	    Serial.println("Error de medicion (o peaton)");
 	}
 
@@ -187,5 +181,5 @@ void loop()
 	count_this = 0;
 	is_measuring = 0;
 
-    }
+    }*/
 }
