@@ -40,6 +40,7 @@ def sensor():
             ahora = datetime.utcnow().strftime("%s") 
             maxID = 1 + cur.execute("select max(id) from bicis").fetchall()[0][0] 
             cur.execute("insert into bicis values( %s , %s ,  %s, %s)" % (maxID,dato["tiempo"],  ahora , dato["pasadas"] ) )
+            db.commit()
             return "clear"
 
 @app.route("/totem", methods=['POST', 'GET'])
