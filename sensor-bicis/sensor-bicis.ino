@@ -9,13 +9,13 @@ char r = '*';
 
 const int DEBUG = 1;
 
-const float umb = 1.25;		// tolerancia del cambio de presion de 10 %
-float ma;
+float ma; // moving average contra el que se comparan los picos de presión
+const float umb = 1.25;		// cambio de presion respecto al promedio que tomamos como hit
 int conteo;		
 int latest_minute;
 int delayRueda = 50;
 int timeout = 2000;
-int lectura = 0;
+float lectura = 0;
 float dEntreEjes = 0.0010668;
 long ultimaLectura = 0;
 long ahora = 0;
@@ -59,18 +59,14 @@ void setup(){
   Ethernet.begin(mac, ip, dnsserver, gw);
   Serial.begin(9600);
   delay(1000);
-
-  for (int i = 0; i < 30; i++) {
-    lectura = analogRead(A0);
-    Serial.print(lectura);
-    Serial.print("\t");
-    Serial.println(ma);
-    ma = ma + lectura;
-  }
-  ma=ma/30;
-  Serial.println(ma);
   Serial.print("My IP address: ");
   Serial.println(Ethernet.localIP());
+ 
+  for (int i = 0; i < 1000; i++) {
+    lectura = (float)analogRead(A0);
+    ma = ma + lectura;
+  }
+  ma=ma/1000;
   Serial.print("Promedio inicial: ");
   Serial.println(ma);
 }
@@ -107,7 +103,8 @@ void loop(){
 
 
 //SENSADO
-    lectura = analogRead(A0);
+    lectura = (4 * lectura + analogRead(A0)) / 5; // "suavizo" las lecturas de a 5 para eliminar algo de ruido.
+
     float diferencia = (float) lectura / (float) ma;
     if (diferencia > umb) {
     	ahora = millis();
