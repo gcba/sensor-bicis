@@ -9,7 +9,7 @@ char r = '*';
 
 const int DEBUG = 1;
 
-const float umb = 1.12;		// tolerancia del cambio de presion de 10 %
+const float umb = 1.25;		// tolerancia del cambio de presion de 10 %
 float ma;
 int conteo;		
 int latest_minute;
@@ -119,7 +119,7 @@ void loop(){
       }
       ultimaLectura = millis();
     }else{
-      ma = (ma * 30 + lectura) / 31;
+      ma = (ma * 1000 + lectura) / 1001;
     }
     /*CODIGO VIEJO
 
