@@ -29,7 +29,10 @@ lastPeak = 0
 bicis = 0
 validArc = False
 while True:
-    e = float(sys.stdin.readline())
+    try:
+      e = float(sys.stdin.readline())
+    except:
+      continue
     
     ma2 = (2*ma2  +e) / 3 
     delta = ma2-ma
@@ -78,7 +81,7 @@ while True:
         #arcDetects.append(None)
         pass
     i += 1
-    if not (i % 100):
+    if not (i % 1000):
       print "replot"
     #diferencias.append((e/ma)*10 + 10)
     print "0\t%s" % e
