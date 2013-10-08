@@ -80,7 +80,7 @@ void loop(){
   	r = client.read();
   	if (c == 'c' && l == 'l' && e == 'e' && a == 'a' && r == 'r') {
   	    conteo = 0;
-  	    Serial.print("cleared");
+  	  //  Serial.print("cleared");
   	  }
     }
     lastConnected = client.connected();
@@ -110,23 +110,24 @@ void loop(){
     	ahora = millis();
       if (ahora-ultimaLectura < timeout  &&  ahora-ultimaLectura > delayRueda){
 		    conteo++;
-        Serial.print("bici: ");
-        Serial.print(dEntreEjes*3600000/(ahora-ultimaLectura));
-        Serial.println("km/h");
+        //Serial.print("bici: ");
+        //Serial.print(dEntreEjes*3600000/(ahora-ultimaLectura));
+        //Serial.println("km/h");
       }
       ultimaLectura = millis();
     }else{
       ma = (ma * 1000 + lectura) / 1001;
     }
-    /*CODIGO VIEJO
+    
 
 
     Serial.print(lectura);
     Serial.print("\t");
-    Serial.print(ma);
+    Serial.print(millis());
     Serial.print("\t");
-    Serial.println(diferencia);*/
-    /*
+    Serial.println(diferencia);
+
+/*CODIGO VIEJO
     //1 - TUBE IS PRESSURIZED INITIALLY
     lectura = analogRead(A0);
     float diferencia = (float) lectura / (float) ma;
