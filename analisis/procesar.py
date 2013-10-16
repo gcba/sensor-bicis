@@ -28,21 +28,23 @@ if __name__ == "__main__":
   c=0
   for e in sys.stdin :
       try:
-        e = float(e)
+        t = e.split()[1]
+        e = float(e.split()[0])
       except:
         continue
       c=f.count
       detect=f.Procesar(e)
 
       if (f.count>c):
-        socket.send("ecobici1 pico %s %s" % (datetime.now().isoformat(), f.count) )
+        socket.send("ecobici1 pico %s %s" % (t, f.count) )
+        print "2 %s" % e
 
-      if ( (f.datalen % 400) == 0):
+      if ( (f.datalen % 10) == 0):
         print "replot" 
       print "0\t%s" % e
       print "1\t%s" % f.ma
       if detect:
-         socket.send("ecobici1 bici %s" % datetime.now().isoformat() )
+         socket.send("ecobici1 bici %s " % (t) )
          print "2 %s" % e
          sys.stderr.write("picos: %s\t" % f.count)
          sys.stderr.writelines("bicis: %s\n" % f.bicis)
