@@ -27,6 +27,7 @@ class Filter:
       # "ma" por moving average
       self.ma=50
       self.ma2=self.ma
+      self.maLP=0  # promedio de los deltas de larguisimo plazo para detectar cambios muy grandes en el sensor (desconexiones, reinicios, etc)
       self.ema = self.ma
       self.vari=self.ma #varianza inicial de 30% para evitar falsos detects
       # para acumular valores de ma para mas tarde
@@ -59,7 +60,15 @@ class Filter:
     
     if (delta < 5*self.vari ):
         self.ma = (self.ma * self.alpha +e) / (self.alpha+1)
-    
+
+   # si el promedio de largo plazo es muy distinto al ma actual, hacer un salto 
+    self.maLP= (5000*self.maLP + delta) / 5001
+    if ( abs(self.maLP) > 10 ):
+      self.maLP = 0
+      self.ma = self.ma + self.maLP 
+      self.vari = 50
+
+ 
      
     detect = None  
     if (delta < 5.0 * self.vari):       
@@ -69,6 +78,7 @@ class Filter:
             self.flag = 1
             self.count += 1
             # voy llenando los ultimos prev_len picos detectados para ver a que distancia estaban
+# revisar esto, creo que no está bien
             if any([ (self.datalen - e) < 25 for e in self.prevDetects ]) :
                self.bicis += 1
                detect = e 

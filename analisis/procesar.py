@@ -48,6 +48,7 @@ if __name__ == "__main__":
         print "replot" 
       print "%s 0 %s" % (strtime,e)
       print "%s 1 %s" % (strtime, f.vari + f.ma)
+      print "%s 4 %s" % (strtime, f.maLP)
       if detect:
          socket.send("ecobici1 bici %s " % (t) )
          print "%s 3 %s" % (strtime,e)
