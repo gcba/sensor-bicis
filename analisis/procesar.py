@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#encoding:latin-1
 """
 Procesar floats que entran por stdin con el Filter de bicicletas y sacar un output compatible con el comando :
 
@@ -6,7 +7,7 @@ feedgnuplot --stream  1 --lines --dataid --autolegend -xlen 5000
 
 """
 from filter import Filter
-from datetime import datetime
+import datetime
 import zmq
 
 if __name__ == "__main__":
@@ -19,6 +20,8 @@ if __name__ == "__main__":
   sensor = 'ecobici1'
   events = ['bici', "pico"]
  
+# fecha completamente arbitraria que es cuando se prendió el arduino por ultima vez (para convertir  millis() en una fecha)
+  inicio = datetime.datetime(2013, 10, 11, 15, 33, 43, 898829)
 
   import sys
   import csv
@@ -32,23 +35,25 @@ if __name__ == "__main__":
         e = float(e.split()[0])
       except:
         continue
+      strtime = ( inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
       c=f.count
       detect=f.Procesar(e)
 
       if (f.count>c):
         socket.send("ecobici1 pico %s %s" % (t, f.count) )
-        print "2 %s" % e
+        # imprimir x, curva-id, valor
+        print "%s 2 %s" % (strtime,e)
 
       if ( (f.datalen % 10) == 0):
         print "replot" 
-      print "0\t%s" % e
-      print "1\t%s" % f.ma
+      print "%s 0 %s" % (strtime,e)
+      print "%s 1 %s" % (strtime, f.vari + f.ma)
       if detect:
          socket.send("ecobici1 bici %s " % (t) )
-         print "2 %s" % e
+         print "%s 3 %s" % (strtime,e)
          sys.stderr.write("picos: %s\t" % f.count)
          sys.stderr.writelines("bicis: %s\n" % f.bicis)
          #sys.stderr.writelines("prev: %s\n" % f.prevDetects)
-      print "3 %s" % (f.vari + f.ma)
 
- 
+      
+   
