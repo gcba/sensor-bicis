@@ -28,6 +28,7 @@ if __name__ == "__main__":
   from math import log
   
   f=Filter()
+  f.umbral = 15
   c=0
   for e in sys.stdin :
       try:
@@ -47,7 +48,7 @@ if __name__ == "__main__":
       if ( (f.datalen % 10) == 0):
         print "replot" 
       print "%s 0 %s" % (strtime,e)
-      print "%s 1 %s" % (strtime, f.vari + f.ma)
+      print "%s 1 %s" % (strtime, f.umbral*f.vari + f.ma)
       print "%s 4 %s" % (strtime, f.maLP)
       if detect:
          socket.send("ecobici1 bici %s " % (t) )

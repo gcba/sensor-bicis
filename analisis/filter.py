@@ -21,6 +21,7 @@ class Filter:
   def __init__(self):
       
 # contador para saber cuantas lineas se procesaron hasta ahora
+      self.umbral= 5  # por cuantas veces debe superar la medicion a la desviacion actual para tomar como detectada
       self.datalen = 0
           
       self.alpha=100
@@ -53,8 +54,8 @@ class Filter:
     self.ma2 = (2*self.ma2  +e) / 3 
     delta = self.ma2-self.ma
     
-    if (delta < 5*self.vari ):
-        self.vari = (100*self.vari + abs(delta))/(100+1)
+    if (delta < 6*self.vari ):
+        self.vari = (1000*self.vari + abs(delta))/(1000+1)
   
 
     
@@ -71,7 +72,7 @@ class Filter:
  
      
     detect = None  
-    if (delta < 5.0 * self.vari):       
+    if (delta < (self.umbral * self.vari)):       
         self.flag = 0
     else:
         if (self.flag == 0 ):
