@@ -1,8 +1,6 @@
 #!/bin/bash
 # recibe el output de procesar.py y lo plotea
 feedgnuplot --lines --domain --dataid \
-#   --stream \
-#   --xlen 50 \
    --legend 0 medicion \
    --legend 1 desvio \
    --legend 2 pulso  \
