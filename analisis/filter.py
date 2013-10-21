@@ -52,10 +52,11 @@ class Filter:
     
 
     self.ma2 = (2*self.ma2  +e) / 3 
-    delta = self.ma2-self.ma
+    # delta = self.ma2-self.ma
+    delta = e - self.ma
     
     if (delta < 6*self.vari ):
-        self.vari = (1000*self.vari + abs(delta))/(1000+1)
+        self.vari = (500*self.vari + abs(delta))/(500+1)
   
 
     
@@ -79,8 +80,9 @@ class Filter:
             self.flag = 1
             self.count += 1
             # voy llenando los ultimos prev_len picos detectados para ver a que distancia estaban
-# revisar esto, creo que no está bien
-            if any([ (self.datalen - e) < 25 for e in self.prevDetects ]) :
+            # si e esta a menos de N=80 mediciones que alguno de los ultimos picos, es una bici
+            # basado en que tenemos entre 50 y 80 muestras por segundo
+            if any([ (self.datalen - e) < 80 for e in self.prevDetects ]) :
                self.bicis += 1
                detect = e 
             self.prevDetects[self.count % 4] = self.datalen

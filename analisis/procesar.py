@@ -28,7 +28,7 @@ if __name__ == "__main__":
   from math import log
   
   f=Filter()
-  f.umbral = 15
+  f.umbral = 10
   c=0
   for e in sys.stdin :
       try:
@@ -36,7 +36,10 @@ if __name__ == "__main__":
         e = float(e.split()[0])
       except:
         continue
-      strtime = ( inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
+      # solo segundos
+      #strtime = ( inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
+      # segundos con fraccion
+      strtime = "%s" %  (inicio+datetime.timedelta(milliseconds=int(t))  )
       c=f.count
       detect=f.Procesar(e)
 
@@ -52,8 +55,11 @@ if __name__ == "__main__":
       print "%s 4 %s" % (strtime, f.maLP)
       if detect:
          socket.send("ecobici1 bici %s " % (t) )
-         print "%s 3 %s" % (strtime,e)
          sys.stderr.write("picos: %s\t" % f.count)
+         print "%s 3 %s" % (strtime,e)
+         print "%s 0 %s" % (strtime,e)
+         print "%s 1 %s" % (strtime, f.umbral*f.vari + f.ma)
+         sys.stderr.writelines("vari: %s umb: %s\n" % (f.vari, f.umbral))
          sys.stderr.writelines("bicis: %s\n" % f.bicis)
          #sys.stderr.writelines("prev: %s\n" % f.prevDetects)
 
