@@ -30,7 +30,7 @@ class Filter:
       self.ma2=self.ma
       self.maLP=0  # promedio de los deltas de larguisimo plazo para detectar cambios muy grandes en el sensor (desconexiones, reinicios, etc)
       self.ema = self.ma
-      self.vari=1 
+      self.vari=0.01 
       # para acumular valores de ma para mas tarde
       self.mas, vars, mas2, detects, arcDetects, diferencias, arcos = [], [], [], [], [], [], []
       self.flag=0   # si ya estamos "dentro" de un evento detectado o fuera
@@ -53,14 +53,14 @@ class Filter:
 
     self.ma2 = (2*self.ma2  +e) / 3 
     # delta = self.ma2-self.ma
-    delta = e - self.ma
+    delta = float(e - self.ma) / self.ma
     
-    if (delta < 6*self.vari ):
-        self.vari = (100*self.vari + abs(delta))/(100+1)
+    if (delta < 10*self.vari ):
+        self.vari = (150*self.vari + abs(delta))/(150+1)
   
 
     
-    if (delta < 5*self.vari ):
+    if (delta < 15*self.vari ):
         self.ma = (self.ma * self.alpha +e) / (self.alpha+1)
 
    # si el promedio de largo plazo es muy distinto al ma actual, hacer un salto 
