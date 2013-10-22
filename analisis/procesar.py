@@ -52,13 +52,13 @@ if __name__ == "__main__":
         print "replot" 
       print "%s 0 %s" % (strtime,e)
       print "%s 1 %s" % (strtime, f.umbral*f.vari + f.ma)
-      print "%s 4 %s" % (strtime, f.maLP)
+      # print "%s 1 %s" % (strtime, 5+f.vari )
+      print "%s 4 %s" % (strtime,f.maLP)
+      print "%s 5 %s" % (strtime, f.ma)
       if detect:
          socket.send("ecobici1 bici %s " % (t) )
          sys.stderr.write("picos: %s\t" % f.count)
          print "%s 3 %s" % (strtime,e)
-         print "%s 0 %s" % (strtime,e)
-         print "%s 1 %s" % (strtime, f.umbral*f.vari + f.ma)
          sys.stderr.writelines("vari: %s umb: %s\n" % (f.vari, f.umbral))
          sys.stderr.writelines("bicis: %s\n" % f.bicis)
          #sys.stderr.writelines("prev: %s\n" % f.prevDetects)

@@ -24,13 +24,13 @@ class Filter:
       self.umbral= 5  # por cuantas veces debe superar la medicion a la desviacion actual para tomar como detectada
       self.datalen = 0
           
-      self.alpha=100
+      self.alpha=5
       # "ma" por moving average
       self.ma=50
       self.ma2=self.ma
       self.maLP=0  # promedio de los deltas de larguisimo plazo para detectar cambios muy grandes en el sensor (desconexiones, reinicios, etc)
       self.ema = self.ma
-      self.vari=self.ma #varianza inicial de 30% para evitar falsos detects
+      self.vari=1 
       # para acumular valores de ma para mas tarde
       self.mas, vars, mas2, detects, arcDetects, diferencias, arcos = [], [], [], [], [], [], []
       self.flag=0   # si ya estamos "dentro" de un evento detectado o fuera
@@ -56,7 +56,7 @@ class Filter:
     delta = e - self.ma
     
     if (delta < 6*self.vari ):
-        self.vari = (500*self.vari + abs(delta))/(500+1)
+        self.vari = (100*self.vari + abs(delta))/(100+1)
   
 
     
@@ -64,11 +64,11 @@ class Filter:
         self.ma = (self.ma * self.alpha +e) / (self.alpha+1)
 
    # si el promedio de largo plazo es muy distinto al ma actual, hacer un salto 
-    self.maLP= (5000*self.maLP + delta) / 5001
-    if ( abs(self.maLP) > 10 ):
+    self.maLP= float(30*self.maLP + delta) / 31
+    if ( abs(self.maLP) > 2  ):
+      self.ma =  e 
       self.maLP = 0
-      self.ma = self.ma + self.maLP 
-      self.vari = 50
+      self.vari = 5 # es arbitrario, para que se ajuste solo en un par de iteraciones
 
  
      
