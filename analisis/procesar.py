@@ -21,9 +21,9 @@ if __name__ == "__main__":
   events = ['bici', "pico"]
  
 # fecha completamente arbitraria que es cuando se prendió el arduino por ultima vez (para convertir  millis() en una fecha)
-  inicio = datetime.datetime(2013, 10, 11, 15, 33, 43, 898829)
+  inicio = datetime.datetime(2013, 10, 23, 13, 36, 29, 0)
 
-  import sys
+  impor sys
   import csv
   from math import log
   
