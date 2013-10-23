@@ -24,7 +24,7 @@ class Filter:
       self.umbral= 5  # por cuantas veces debe superar la medicion a la desviacion actual para tomar como detectada
       self.datalen = 0
           
-      self.alpha=5
+      self.alpha=0.9
       # "ma" por moving average
       self.ma=50
       self.ma2=self.ma
@@ -50,30 +50,32 @@ class Filter:
     (por ahora detecta cada pico o rueda, ojo con eso)
     """
     
+    t1=0.7 #corto plazo
+    t2=0.99 #largo plazo
 
-    self.ma2 = (2*self.ma2  +e) / 3 
+    self.ma2 = (t1*self.ma2  +(1-t1)*e)  
     # delta = self.ma2-self.ma
-    delta = float(e - self.ma) / self.ma
     
-    if (delta < 10*self.vari ):
-        self.vari = (150*self.vari + abs(delta))/(150+1)
+    #if (delta < 10*self.vari ):
+    self.vari = t2*self.vari + (1-t2)*e
   
 
     
-    if (delta < 15*self.vari ):
-        self.ma = (self.ma * self.alpha +e) / (self.alpha+1)
+    #if (delta < 15*self.vari ):
+    self.ma = t2*self.ma + (1-t2) *e 
 
    # si el promedio de largo plazo es muy distinto al ma actual, hacer un salto 
-    self.maLP= float(30*self.maLP + delta) / 31
-    if ( abs(self.maLP) > 2  ):
-      self.ma =  e 
-      self.maLP = 0
-      self.vari = 5 # es arbitrario, para que se ajuste solo en un par de iteraciones
+    # self.maLP= float(30*self.maLP + delta) / 31
+    # if ( abs(self.maLP) > 2  ):
+    #   self.ma =  e 
+    #   self.maLP = 0
+    #   self.vari = 5 # es arbitrario, para que se ajuste solo en un par de iteraciones
 
  
      
     detect = None  
-    if (delta < (self.umbral * self.vari)):       
+    delta = abs(self.ma2 - self.vari)/self.vari 
+    if (delta < 0.1):       
         self.flag = 0
     else:
         if (self.flag == 0 ):

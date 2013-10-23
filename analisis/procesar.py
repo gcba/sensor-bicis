@@ -28,7 +28,7 @@ if __name__ == "__main__":
   from math import log
   
   f=Filter()
-  f.umbral = 12
+  f.umbral = 5 
   c=0
   for e in sys.stdin :
       try:
@@ -52,8 +52,8 @@ if __name__ == "__main__":
       if ( (f.datalen % 10) == 0):
         print "replot" 
       print "%s 0 %s" % (strtime, e )
-      print "%s 1 %s" % (strtime, f.ma * ( 1 + f.umbral*f.vari)  )
-      print "%s 4 %s" % (strtime, 1+f.maLP )
+      print "%s 1 %s" % (strtime, f.vari  )
+      print "%s 4 %s" % (strtime, f.ma2 )
       # print "%s 5 %s" % (strtime, 0)
       print "%s 5 %s" % (strtime, f.ma)
       if detect:
