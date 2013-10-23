@@ -23,7 +23,7 @@ if __name__ == "__main__":
 # fecha completamente arbitraria que es cuando se prendió el arduino por ultima vez (para convertir  millis() en una fecha)
   inicio = datetime.datetime(2013, 10, 23, 13, 36, 29, 0)
 
-  impor sys
+  import sys
   import csv
   from math import log
   
