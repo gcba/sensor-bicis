@@ -34,12 +34,13 @@ if __name__ == "__main__":
       try:
         t = e.split()[1]
         e = float(e.split()[0])
+        # solo segundos
+        #strtime = ( inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
+        # segundos con fraccion
+        strtime = "%s" %  (inicio+datetime.timedelta(milliseconds=int(t))  )
+
       except:
         continue
-      # solo segundos
-      #strtime = ( inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
-      # segundos con fraccion
-      strtime = "%s" %  (inicio+datetime.timedelta(milliseconds=int(t))  )
       c=f.count
       detect=f.Procesar(e)
 
