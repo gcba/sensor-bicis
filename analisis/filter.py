@@ -50,7 +50,7 @@ class Filter:
     (por ahora detecta cada pico o rueda, ojo con eso)
     """
     
-    t1=0.7 #corto plazo
+    t1=0.72 #corto plazo
     t2=0.99 #largo plazo
 
     self.ma2 = (t1*self.ma2  +(1-t1)*e)  
@@ -74,10 +74,8 @@ class Filter:
  
      
     detect = None  
-    delta = abs(self.ma2 - self.vari)/self.vari 
-    if (delta < 0.1):       
-        self.flag = 0
-    else:
+    delta = (self.ma2 - self.vari)/self.vari 
+    if (delta > 0.18):       
         if (self.flag == 0 ):
             self.flag = 1
             self.count += 1
@@ -93,7 +91,9 @@ class Filter:
             # if len(detects)-lastPeak< 250:
             #     bicis += 1
             # lastPeak = len(detects)
-            
+    else:
+        if (delta < 0.1):       
+          self.flag = 0
     
     self.datalen += 1
 

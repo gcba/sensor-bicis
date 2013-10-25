@@ -55,7 +55,7 @@ if __name__ == "__main__":
       print "%s 1 %s" % (strtime, f.vari  )
       print "%s 4 %s" % (strtime, f.ma2 )
       # print "%s 5 %s" % (strtime, 0)
-      print "%s 5 %s" % (strtime, f.ma)
+      # print "%s 5 %s" % (strtime, f.ma)
       if detect:
          socket.send("ecobici1 bici %s " % (t) )
          sys.stderr.write("picos: %s\t" % f.count)
