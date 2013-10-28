@@ -24,8 +24,9 @@ set grid back ls 12
 
 
 plot \
-'0' using 1:4 title 'Presion' with lines ,\
-'1' using 1:4 title 'largo plazo vari' with lines,\
-'4' using 1:4 title 'corto plazo ma2' with lines,\
-'2' using 1:4 title 'Picos' with points pt 2,\
-'3' using 1:4 title 'Bicis' with points ls 2 pt 6
+'8' using 1:(1) title "Bicis nuevo" with point pt 5   
+#'0' using 1:4 title 'Presion' with lines ,\
+#'1' using 1:4 title 'largo plazo vari' with lines,\
+#'4' using 1:4 title 'corto plazo ma2' with lines,\
+#'2' using 1:4 title 'Picos' with points pt 2,\
+#'3' using 1:4 title 'Bicis' with points ls 2 pt 6
