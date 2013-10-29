@@ -19,7 +19,7 @@ float lectura = 0;
 float dEntreEjes = 0.0010668;
 long ultimaLectura = 0;
 long ahora = 0;
-
+long prev = 0;
 
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
 
@@ -80,7 +80,7 @@ void loop(){
   	r = client.read();
   	if (c == 'c' && l == 'l' && e == 'e' && a == 'a' && r == 'r') {
   	    conteo = 0;
-  	    Serial.print("cleared");
+  	  //  Serial.print("cleared");
   	  }
     }
     lastConnected = client.connected();
@@ -104,29 +104,32 @@ void loop(){
 
 //SENSADO
     lectura = (4 * lectura + analogRead(A0)) / 5; // "suavizo" las lecturas de a 5 para eliminar algo de ruido.
+    lectura = analogRead(A0);
 
     float diferencia = (float) lectura / (float) ma;
     if (diferencia > umb) {
     	ahora = millis();
       if (ahora-ultimaLectura < timeout  &&  ahora-ultimaLectura > delayRueda){
 		    conteo++;
-        Serial.print("bici: ");
-        Serial.print(dEntreEjes*3600000/(ahora-ultimaLectura));
-        Serial.println("km/h");
+        //Serial.print("bici: ");
+        //Serial.print(dEntreEjes*3600000/(ahora-ultimaLectura));
+        //Serial.println("km/h");
       }
       ultimaLectura = millis();
     }else{
       ma = (ma * 1000 + lectura) / 1001;
     }
-    /*CODIGO VIEJO
+    
 
 
     Serial.print(lectura);
     Serial.print("\t");
-    Serial.print(ma);
+    Serial.print(millis());
     Serial.print("\t");
-    Serial.println(diferencia);*/
-    /*
+    Serial.println(millis()-prev);
+    prev = millis();
+
+/*CODIGO VIEJO
     //1 - TUBE IS PRESSURIZED INITIALLY
     lectura = analogRead(A0);
     float diferencia = (float) lectura / (float) ma;
