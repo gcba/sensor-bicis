@@ -34,13 +34,13 @@ if __name__ == "__main__":
             t = int(e.split()[1])
             e = float(e.split()[0])
             # solo segundos
-            #strtime = ( inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
+            strtime = (inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
             # segundos con fraccion
-            strtime = "%s" %  (inicio+datetime.timedelta(milliseconds=int(t))  )
+            strtime = "%s" %  (inicio+datetime.timedelta(seconds=int(t/1000))  )
 
         except:
             continue
-        detect, bici, biciNuevo=f.Procesar(e, t)
+        detect, biciPosta, bici = f.Procesar(e, t)
 
         if ( (f.datalen % 10) == 0):
             print "replot" 
@@ -50,11 +50,12 @@ if __name__ == "__main__":
         if detect:
             print "%s 2 %s" % (strtime, e)
             socket.send("ecobici1 pico %s %s" % (t, f.count) )
-            if bici:
+            if biciPosta:
                 print "%s 3 %s" % (strtime, e)
-                socket.send("ecobici1 bici %s " % (t) )
-            if biciNuevo:
+                socket.send("ecobici1 iciPosta %s " % (t) )
+            if bici:
                 print "%s 8 %s" % (strtime, e)
+                socket.send("ecobici1 bici %s " % (strtime) )
             sys.stderr.write("picos: %s\t" % f.count)
             sys.stderr.writelines("vari: %s umb: %s\n" % (f.vari, f.umbral))
             sys.stderr.writelines("bicis: %s\n" % f.bicis)

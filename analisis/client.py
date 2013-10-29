@@ -3,7 +3,7 @@ import zmq
 import csv
 import datetime
 
-inicio = datetime.datetime(2013, 10, 11, 15, 33, 43, 898829)
+inicio = datetime.datetime(2013, 10, 23, 14, 37, 50, 0)
 
  
 context = zmq.Context()

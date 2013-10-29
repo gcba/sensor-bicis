@@ -66,8 +66,8 @@ class Filter:
         #   self.vari = 5 # es arbitrario, para que se ajuste solo en un par de iteraciones
 
         detect = None  
-        bici = None  
-        biciNuevo = None
+        biciPosta = None  
+        bici = None
         delta = (self.ma2 - self.vari)/self.vari 
         if (delta > 0.18): 
             if (self.flag == 0 ):
@@ -79,17 +79,17 @@ class Filter:
                 # basado en que tenemos entre 50 y 80 muestras por segundo
                 if any([ (self.datalen - e) < 80 for e in self.prevDetects ]) :
                     self.bicis += 1
-                    bici = True
+                    biciPosta = True
                 self.prevDetects[self.count % 4] = self.datalen
                 if (t - self.prevDetect > 800):
                     self.prevDetect = t
-                    biciNuevo = True
+                    bici = True
         else:
             if (delta < 0.1):       
                 self.flag = 0
         
         self.datalen += 1
 
-        return detect, bici, biciNuevo
+        return detect, biciPosta, bici
 
      
