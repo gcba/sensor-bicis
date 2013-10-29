@@ -12,15 +12,16 @@ long valor = 0;
 byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
 IPAddress ip(192,168,1,96);
 EthernetClient client;
-byte server[] = { 192,168,1,138}; 
+byte server[] = { 192,168,1,124}; 
 unsigned long lastConnectionTime = 0;
 boolean lastConnected = false;
-const unsigned long readingInterval =  6000;
+const unsigned long readingInterval =  10000;
+bool lala = false;
 
 void httpRequest(String data) {
-  if (client.connect(server, 5001)) {
-    client.println("POST /sensor HTTP/1.0");
-    client.println("Host: 192.168.1.138");
+  if (client.connect(server, 8080)) {
+    client.println("POST /totem HTTP/1.0");
+    client.println("Host: 192.168.1.124");
     client.println("User-Agent: arduino-ethernet");
     client.print("Content-Length: ");
     client.println(data.length());
@@ -35,31 +36,37 @@ void httpRequest(String data) {
   lastConnectionTime = millis();
 }
 
+String time(){
+  long ahora = millis();
+  int dia = ahora / 86400000 ;
+  int hora = (ahora % dia) / 3600000;
+  int minutos = ((ahora % dia) % hora) / 60000 ;
+  int segundos = (((ahora % dia) % hora) % minutos) / 1000;
+  return String(dia) + ":" + String(hora) + ":" + String(minutos) + ":" + String(segundos);
+}
+
 void setup() {
   Ethernet.begin(mac, ip);
   Serial.begin(9600);
   delay(1000);
-  Serial.println(banner);
   Serial.print("My IP address: ");
   Serial.println(Ethernet.localIP());
 }
 
 void loop() {
   if (client.available()) {
-    cMil = dMil;
     dMil = uMil;
     uMil = cent;
     cent = dec;
     dec = un;
-    un = client.read();
-    if (cMil == '#' && dMil == '#' &&  uMil == '#' && cent == '#' && dec == '#' && un == '#'){
-      cMil = client.read();
+    un = char(client.read());
+    if (dMil == '#' &&  uMil == '#' && cent == '#' && dec == '#' && un == '#'){
       dMil = client.read();
       uMil = client.read();
       cent = client.read();
       dec = client.read();
       un = client.read();
-      Serial.print(time() + Mil + dMil + uMil + cent + dec + un);
+      cartel(dMil + uMil + cent + dec + un);
     }
   }
   lastConnected = client.connected();
@@ -72,13 +79,4 @@ void loop() {
     httpRequest(reporte);
   }
   lastConnected = client.connected();
-}
-
-String time(){
-  long ahora = millis();
-  int dia = ahora / 86400000 ;
-  int hora = (ahora % dia) / 3600000;
-  int minutos = ((ahora % dia) % hora) / 60000 ;
-  int segundos = (((ahora % dia) % hora) % minutos) / 1000;
-  return String(dia) + ":" + String(hora) + ":" + String(minutos) + ":" + String(segundos);
 }
