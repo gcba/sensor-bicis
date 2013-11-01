@@ -7,10 +7,16 @@ feedgnuplot --stream  1 --lines --dataid --autolegend -xlen 5000
 
 """
 from filter import Filter
+import dateutil.parser
+import argparse
 import datetime
 import zmq
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--inicio', help='Fecha de inicio de los datos')
+    args=parser.parse_args()
 
     # inicializar zmq server
     context = zmq.Context()
@@ -21,7 +27,10 @@ if __name__ == "__main__":
     events = ['bici', "pico"]
      
     # fecha completamente arbitraria que es cuando se prendió el arduino por ultima vez (para convertir  millis() en una fecha)
-    inicio = datetime.datetime(2013, 10, 23, 14, 37, 50, 0)
+    if vars(args)['inicio']:
+        inicio = dateutil.parser.parse(args.inicio)
+    else:
+        inicio = datetime.datetime.now()
 
     import sys
     import csv
