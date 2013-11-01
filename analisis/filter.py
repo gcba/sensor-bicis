@@ -35,6 +35,11 @@ class Filter:
         # cantidad de eventos
         self.count = 0
         self.bicis = 0
+        self.bicis1 = 0
+        self.bicis2 = 0
+        self.bicis3 = 0
+        self.bicis4 = 0
+        self.bicis5 = 0
         prev_len=4
         self.prevDetects=[ 0 for i in range(prev_len)]
         self.prevDetect = 0 
@@ -83,6 +88,7 @@ class Filter:
                 self.prevDetects[self.count % 4] = self.datalen
                 if (t - self.prevDetect > 800):
                     self.prevDetect = t
+                    self.bicis1 += 1
                     bici = True
         else:
             if (delta < 0.1):       

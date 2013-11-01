@@ -42,8 +42,8 @@ if __name__ == "__main__":
             continue
         detect, biciPosta, bici = f.Procesar(e, t)
 
-        if ( (f.datalen % 10) == 0):
-            print "replot" 
+        #if ( (f.datalen % 10) == 0):
+        #    print "replot" 
         print "%s 0 %s" % (strtime, e )
         print "%s 1 %s" % (strtime, f.vari  )
         print "%s 4 %s" % (strtime, f.ma2 )
@@ -57,8 +57,8 @@ if __name__ == "__main__":
                 print "%s 8 %s" % (strtime, e)
                 socket.send("ecobici1 bici %s " % (strtime) )
             sys.stderr.write("picos: %s\t" % f.count)
-            sys.stderr.writelines("vari: %s umb: %s\n" % (f.vari, f.umbral))
             sys.stderr.writelines("bicis: %s\n" % f.bicis)
+            sys.stderr.writelines("bicis: %s\n" % f.bicis1)
             #sys.stderr.writelines("prev: %s\n" % f.prevDetects)
 
 

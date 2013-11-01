@@ -9,7 +9,7 @@ from flask import Flask, jsonify, render_template, request, g
 
 
 app = Flask(__name__)
-DATABASE = 'base.db'
+DATABASE = '../analisis/base.db'
 db = sqlite3.connect(DATABASE)
 cur = db.cursor()
 

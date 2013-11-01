@@ -17,6 +17,7 @@ except Exception:
 context = zmq.Context()
 socket = context.socket(zmq.SUB)
 socket.connect("tcp://127.0.0.1:5000")
+#socket.connect("tcp://10.10.10.202:5000")
 socket.setsockopt(zmq.SUBSCRIBE, "ecobici1 bici")
 while True:
     d = socket.recv().split()
