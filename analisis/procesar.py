@@ -43,9 +43,9 @@ if __name__ == "__main__":
             t = int(e.split()[1])
             e = float(e.split()[0])
             # solo segundos
-            strtime = (inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
+            #strtime = (inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
             # segundos con fraccion
-            strtime = "%s" %  (inicio+datetime.timedelta(seconds=int(t/1000))  )
+            strtime = "%s" %  (inicio+datetime.timedelta(milliseconds=int(t)) )
 
         except:
             continue
