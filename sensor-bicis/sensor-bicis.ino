@@ -57,7 +57,7 @@ void httpRequest(String data){
 void setup(){
   pinMode(A0, INPUT);
   Ethernet.begin(mac, ip, dnsserver, gw);
-  Serial.begin(9600);
+  Serial.begin(115200);
   delay(1000);
   Serial.print("My IP address: ");
   Serial.println(Ethernet.localIP());
@@ -72,7 +72,7 @@ void setup(){
 }
 
 void loop(){
-  if (client.available()) {
+  /*if (client.available()) {
   	c = l;
   	l = e;
   	e = a;
@@ -100,7 +100,7 @@ void loop(){
     }
     lastConnected = client.connected();
 
-
+*/
 
 //SENSADO
     lectura = (4 * lectura + analogRead(A0)) / 5; // "suavizo" las lecturas de a 5 para eliminar algo de ruido.
