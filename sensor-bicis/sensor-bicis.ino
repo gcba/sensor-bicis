@@ -57,7 +57,7 @@ void httpRequest(String data){
 void setup(){
   pinMode(A0, INPUT);
   Ethernet.begin(mac, ip, dnsserver, gw);
-  Serial.begin(115200);
+  Serial.begin(38400);
   delay(1000);
   Serial.print("My IP address: ");
   Serial.println(Ethernet.localIP());
