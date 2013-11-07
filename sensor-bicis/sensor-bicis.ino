@@ -56,19 +56,19 @@ void httpRequest(String data){
 
 void setup(){
   pinMode(A0, INPUT);
-  Ethernet.begin(mac, ip, dnsserver, gw);
+  //Ethernet.begin(mac, ip, dnsserver, gw);
   Serial.begin(38400);
   delay(1000);
-  Serial.print("My IP address: ");
-  Serial.println(Ethernet.localIP());
+  //Serial.print("My IP address: ");
+  //Serial.println(Ethernet.localIP());
  
   for (int i = 0; i < 1000; i++) {
     lectura = (float)analogRead(A0);
     ma = ma + lectura;
   }
   ma=ma/1000;
-  Serial.print("Promedio inicial: ");
-  Serial.println(ma);
+  //Serial.print("Promedio inicial: ");
+  //Serial.println(ma);
 }
 
 void loop(){
