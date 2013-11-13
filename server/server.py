@@ -45,7 +45,7 @@ def sensor():
 
 @app.route("/totem", methods=['POST', 'GET'])
 def totem():
-    respuesta = str(cur.execute("select sum(pasadas) from bicis").fetchall()[0][0])
+    respuesta = str(cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0])
     return "#####" + "0" * (5-len(respuesta)) + respuesta
 
 if __name__ == "__main__":

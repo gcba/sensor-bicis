@@ -11,6 +11,7 @@ import dateutil.parser
 import argparse
 import datetime
 import zmq
+import sys
 
 if __name__ == "__main__":
 
@@ -31,10 +32,6 @@ if __name__ == "__main__":
         inicio = dateutil.parser.parse(args.inicio)
     else:
         inicio = datetime.datetime.now()
-
-    import sys
-    import csv
-    from math import log
 
     f=Filter()
     f.umbral = 5 
