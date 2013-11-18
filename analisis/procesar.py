@@ -50,17 +50,17 @@ if __name__ == "__main__":
 
         #if ( (f.datalen % 10) == 0):
         #    print "replot" 
-        print "%s 0 %s" % (strtime, e-f.vari )
-        print "%s 1 %s" % (strtime, 0)# f.vari   )
-        print "%s 4 %s" % (strtime, f.ma2 - f.vari )
+        print "%s 0 %s" % (strtime, e )
+        print "%s 1 %s" % (strtime,  f.vari   )
+        print "%s 4 %s" % (strtime, f.ma2  )
         if detect:
-            print "%s 2 %s" % (strtime, e -f.vari)
+            print "%s 2 %s" % (strtime, e )
             socket.send("ecobici1 pico %s %s" % (t, f.count) )
             if biciPosta:
-                print "%s 3 %s" % (strtime, e - f.vari)
+                print "%s 3 %s" % (strtime, e )
                 socket.send("ecobici1 iciPosta %s " % (t) )
             if bici:
-                print "%s 8 %s" % (strtime, e - f.vari)
+                print "%s 8 %s" % (strtime, e )
                 socket.send("ecobici1 bici %s " % (strtime) )
             sys.stderr.write("picos: %s\t" % f.count)
             sys.stderr.writelines("bicis: %s\n" % f.bicis)
