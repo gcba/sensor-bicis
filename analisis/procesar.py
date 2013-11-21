@@ -22,7 +22,7 @@ if __name__ == "__main__":
     # inicializar zmq server
     context = zmq.Context()
     socket = context.socket(zmq.PUB)
-    socket.bind("tcp://127.0.0.1:5000")
+    socket.bind("tcp://0.0.0.0:5000")
     # eventos que van a ir por broadcast   
     sensor = 'ecobici1'
     events = ['bici', "pico"]

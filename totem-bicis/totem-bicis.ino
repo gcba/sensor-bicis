@@ -7,28 +7,25 @@ char uMil = '0';
 char cent = '0';
 char dec = '0';
 char un = '0';
-long valor = 0;
+long valor = 20;
 
 byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
 IPAddress ip(192,168,1,96);
 EthernetClient client;
-byte server[] = { 192,168,1,124}; 
+byte server[] = { 10,10,10,202}; 
 unsigned long lastConnectionTime = 0;
 boolean lastConnected = false;
-const unsigned long readingInterval =  10000;
-bool lala = false;
+const unsigned long readingInterval =  1000;
 
-void httpRequest(String data) {
+
+void httpRequest() {
   if (client.connect(server, 8080)) {
-    client.println("POST /totem HTTP/1.0");
-    client.println("Host: 192.168.1.124");
+    client.println("GET /totem HTTP/1.0");
+    client.println("Host: 10.10.10.202");
     client.println("User-Agent: arduino-ethernet");
-    client.print("Content-Length: ");
-    client.println(data.length());
-    client.println("Content-Type: application/json");
+    //client.println("Accept: */*");
     client.println("Connection: close");
     client.println();
-    client.println(data);
   } 
   else {
     client.stop();
@@ -36,21 +33,57 @@ void httpRequest(String data) {
   lastConnectionTime = millis();
 }
 
-String time(){
-  long ahora = millis();
-  int dia = ahora / 86400000 ;
-  int hora = (ahora % dia) / 3600000;
-  int minutos = ((ahora % dia) % hora) / 60000 ;
-  int segundos = (((ahora % dia) % hora) % minutos) / 1000;
-  return String(dia) + ":" + String(hora) + ":" + String(minutos) + ":" + String(segundos);
+void cartel(){
+  Serial.end();
+  digitalWrite(7,LOW);
+  delay(4000);
+  Serial.begin(9600); 
+  delay(4000);
+  Serial.print("$1000");
+  Serial.println(dMil);
+  delay(4000);
+  Serial.print("$2");
+  Serial.print(uMil);
+  Serial.print(cent);
+  Serial.print(dec);
+  Serial.println(un);
+}
+
+void barra(){
+  Serial.end();
+  digitalWrite(7,HIGH);
+  delay(500);
+  Serial.begin(4800); 
+  
+  Serial.print("^L^V^9");
+  Serial.print("^G");
+  int chr=0;
+  for(int i=0;i<valor;i++){
+    if(chr < 6){
+      Serial.print("^7^7");
+      chr++;
+    }else{
+      Serial.print("^G^7^7");
+      chr=0;
+    }
+  }
+  Serial.print("^_");
 }
 
 void setup() {
-  Ethernet.begin(mac, ip);
+  Ethernet.begin(mac);
+  digitalWrite(7,LOW);
+  digitalWrite(5,LOW);
+  delay(40);
   Serial.begin(9600);
-  delay(1000);
-  Serial.print("My IP address: ");
-  Serial.println(Ethernet.localIP());
+  delay(100);
+  digitalWrite(5,LOW);
+  delay(100);
+  digitalWrite(5,HIGH);
+  //Serial.println("$10000");
+  //Serial.println("$20000");
+  //Serial.print("My IP address: ");
+  //Serial.println(Ethernet.localIP());
 }
 
 void loop() {
@@ -66,17 +99,20 @@ void loop() {
       cent = client.read();
       dec = client.read();
       un = client.read();
-      cartel(dMil + uMil + cent + dec + un);
+      Serial.print(dMil);
+      Serial.print(uMil);
+      Serial.print(cent);
+      Serial.print(dec);
+      Serial.print(un);
+      cartel();
     }
   }
   lastConnected = client.connected();
   if (!client.connected() && lastConnected) {
     client.stop();
   }
-  if(!client.connected() && (millis() - lastConnectionTime > random(readingInterval/2,readingInterval))) {
-    client.stop();
-    String reporte="{\"tiempo\":"+String(time())+",\"valor\":"+String(valor)+"}";
-    httpRequest(reporte);
+  if(!client.connected() && (millis() - lastConnectionTime > readingInterval)) {
+    httpRequest();
   }
   lastConnected = client.connected();
 }
