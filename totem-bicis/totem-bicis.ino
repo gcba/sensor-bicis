@@ -7,15 +7,19 @@ char uMil = '0';
 char cent = '0';
 char dec = '0';
 char un = '0';
-long valor = 20;
+long valor = 0;
 
 byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
 IPAddress ip(192,168,1,96);
 EthernetClient client;
 byte server[] = { 10,10,10,202}; 
 unsigned long lastConnectionTime = 0;
+unsigned long lastBarraTime = 0;
 boolean lastConnected = false;
+// cada cuanto ir a buscar datos al server
 const unsigned long readingInterval =  1000;
+// intervalo de update de la barra
+const unsigned long barraInterval =  41000;
 
 
 void httpRequest() {
@@ -36,7 +40,7 @@ void httpRequest() {
 void cartel(){
   Serial.end();
   digitalWrite(7,LOW);
-  delay(4000);
+  delay(1000);
   Serial.begin(9600); 
   delay(4000);
   Serial.print("$1000");
@@ -47,27 +51,35 @@ void cartel(){
   Serial.print(cent);
   Serial.print(dec);
   Serial.println(un);
+  Serial.flush();
 }
-
-void barra(){
+void dot(){
   Serial.end();
   digitalWrite(7,HIGH);
-  delay(500);
+  delay(100);
   Serial.begin(4800); 
   
   Serial.print("^L^V^9");
   Serial.print("^G");
+  Serial.print("^1^0");
+  Serial.println("^_");
+  Serial.flush();
+}
+void barra(){
+  Serial.end();
+  digitalWrite(7,HIGH);
+  delay(100);
+  Serial.begin(4800); 
+  
+  Serial.print("^L^V^9");
   int chr=0;
   for(int i=0;i<valor;i++){
-    if(chr < 6){
+      if( (i % 6) == 0) 
+      	Serial.print("^G");
       Serial.print("^7^7");
-      chr++;
-    }else{
-      Serial.print("^G^7^7");
-      chr=0;
-    }
   }
-  Serial.print("^_");
+  Serial.println("^_");
+  Serial.flush();
 }
 
 void setup() {
@@ -80,6 +92,27 @@ void setup() {
   digitalWrite(5,LOW);
   delay(100);
   digitalWrite(5,HIGH);
+  int i;
+  Serial.begin(4800); 
+  valor=1;
+  barra();
+  //dot();
+  delay(1000);
+/*
+  while(true){
+  for (i=1; i<101; i++) {
+        valor=i;
+	barra();
+  	delay(500);
+  };
+  for (; i>1; i--) {
+        valor=i;
+	barra();
+  	delay(500);
+  };
+ }
+*/
+
   //Serial.println("$10000");
   //Serial.println("$20000");
   //Serial.print("My IP address: ");
@@ -99,11 +132,17 @@ void loop() {
       cent = client.read();
       dec = client.read();
       un = client.read();
-      Serial.print(dMil);
-      Serial.print(uMil);
-      Serial.print(cent);
-      Serial.print(dec);
-      Serial.print(un);
+      //Serial.print(dMil);
+      //Serial.print(uMil);
+      //Serial.print(cent);
+      //Serial.print(dec);
+      //Serial.println(un);
+      valor = int(dec) * 10 + int(un) - 528;
+      //Serial.println(valor);
+      if((millis() - lastBarraTime > barraInterval)) {
+     	barra();
+	lastBarraTime=millis();
+      };
       cartel();
     }
   }
