@@ -45,11 +45,11 @@ def index():
 def totem():
     dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
     anio = cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now'));").fetchall()[0][0]/7500
-    if (dia > 0):
+    if True:#(dia > 0):
         return "#####" + "0" * (5-len(dia)) + dia
-    else:
-        dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
-        return "#####" + "0" * (5-len(dia)) + dia
+    #else:
+    #    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now', '-1 day'));").fetchall()[0][0]
+    #    return "#####" + "0" * (5-len(dia)) + dia
 
 
 if __name__ == "__main__":
