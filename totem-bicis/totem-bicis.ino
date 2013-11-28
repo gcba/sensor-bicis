@@ -65,6 +65,7 @@ void dot(){
   Serial.println("^_");
   Serial.flush();
 }
+
 void barra(){
   Serial.end();
   digitalWrite(7,HIGH);
@@ -81,6 +82,23 @@ void barra(){
   Serial.println("^_");
   Serial.flush();
 }
+
+/* por ahora es horrible esto*/
+void animation() {
+  int valor1 = valor;
+  for (int i =0 ; i<2; i++) {
+        valor=100;
+	barra();
+  	delay(500);
+    valor=0;
+	barra();
+  	delay(500);
+  };
+  valor = valor1;
+  barra();
+}
+
+
 
 void setup() {
   Ethernet.begin(mac);
@@ -113,6 +131,7 @@ void setup() {
  }
 */
 
+  //animation();
   //Serial.println("$10000");
   //Serial.println("$20000");
   //Serial.print("My IP address: ");
@@ -120,6 +139,7 @@ void setup() {
 }
 
 void loop() {
+  int un1=valor;
   if (client.available()) {
     dMil = uMil;
     uMil = cent;
@@ -143,7 +163,11 @@ void loop() {
      	barra();
 	lastBarraTime=millis();
       };
-      cartel();
+    if(un1 != un) {
+     // animation();
+     cartel(); 
+     un1 = un;
+    }
     }
   }
   lastConnected = client.connected();
