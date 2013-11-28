@@ -19,7 +19,7 @@ boolean lastConnected = false;
 // cada cuanto ir a buscar datos al server
 const unsigned long readingInterval =  1000;
 // intervalo de update de la barra
-const unsigned long barraInterval =  41000;
+const unsigned long barraInterval =  600000;
 
 
 void httpRequest() {
