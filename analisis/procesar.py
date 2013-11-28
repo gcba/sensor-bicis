@@ -42,7 +42,10 @@ if __name__ == "__main__":
             # solo segundos
             #strtime = (inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
             # segundos con fraccion
-            strtime = "%s" %  (inicio+datetime.timedelta(milliseconds=int(t)) )
+            if vars(args)['inicio']:
+                strtime = "%s" %  (inicio+datetime.timedelta(milliseconds=int(t)) )
+            else:
+                strtime = "%s" %  (datetime.now())
 
         except:
             continue
