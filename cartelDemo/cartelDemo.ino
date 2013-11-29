@@ -7,6 +7,7 @@ char uMil = '0';
 char cent = '0';
 char dec = '0';
 char un = '0';
+long valor = 20;
 
 int numero=12345;
 int valor=0;
@@ -98,40 +99,6 @@ void loop() {
   numero++;
   valor++;
   delay(4000);
-  if (client.available()) {
-    dMil = uMil;
-    uMil = cent;
-    cent = dec;
-    dec = un;
-    un = char(client.read());
-    if (dMil == '#' &&  uMil == '#' && cent == '#' && dec == '#' && un == '#'){
-      dMil = client.read();
-      uMil = client.read();
-      cent = client.read();
-      dec = client.read();
-      un = client.read();
-      Serial.print(dMil);
-      Serial.print(uMil);
-      Serial.print(cent);
-      Serial.print(dec);
-      Serial.print(un);
-      cartel();
-      barra();
-      //cartel(dMil + uMil + cent + dec + un);
-    }
-  }
-  lastConnected = client.connected();
-  if (!client.connected() && lastConnected) {
-    client.stop();
-  }
-  if(!client.connected() && (millis() - lastConnectionTime > readingInterval)) {
-    client.stop();
-    numero = 9999;
-    cartel();
-    httpRequest();
-  }else{
-  }
-  lastConnected = client.connected();
   cartel();
   barra();
 }

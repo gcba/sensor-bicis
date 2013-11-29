@@ -46,7 +46,7 @@ def totem():
     dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
     anio = cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now'));").fetchall()[0][0]/7500
     if True:#(dia > 0):
-        return "#####" + "0" * (5-len(dia)) + dia
+        return "#####" + " " * (5-len(dia)) + dia + anio
     #else:
     #    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now', '-1 day'));").fetchall()[0][0]
     #    return "#####" + "0" * (5-len(dia)) + dia
