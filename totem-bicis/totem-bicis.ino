@@ -7,6 +7,9 @@ char uMil = '0';
 char cent = '0';
 char dec = '0';
 char un = '0';
+char un1 = '0';
+char bdec = '0';
+char bun = '0';
 long valor = 0;
 
 byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
@@ -19,7 +22,7 @@ boolean lastConnected = false;
 // cada cuanto ir a buscar datos al server
 const unsigned long readingInterval =  1000;
 // intervalo de update de la barra
-const unsigned long barraInterval =  600000;
+const unsigned long barraInterval =  86400000;
 
 
 void httpRequest() {
@@ -104,18 +107,15 @@ void setup() {
   Ethernet.begin(mac);
   digitalWrite(7,LOW);
   digitalWrite(5,LOW);
-  delay(40);
-  Serial.begin(9600);
-  delay(100);
-  digitalWrite(5,LOW);
-  delay(100);
+  delay(50);
   digitalWrite(5,HIGH);
+  Serial.begin(9600);
+  delay(50);
   int i;
-  Serial.begin(4800); 
-  valor=1;
-  barra();
   //dot();
   delay(1000);
+  Serial.print("$1    $2    ");
+  Serial.flush();
 /*
   while(true){
   for (i=1; i<101; i++) {
@@ -139,7 +139,6 @@ void setup() {
 }
 
 void loop() {
-  int un1=valor;
   if (client.available()) {
     dMil = uMil;
     uMil = cent;
@@ -152,22 +151,25 @@ void loop() {
       cent = client.read();
       dec = client.read();
       un = client.read();
+      bdec = client.read();
+      bun = client.read();
       //Serial.print(dMil);
       //Serial.print(uMil);
       //Serial.print(cent);
       //Serial.print(dec);
       //Serial.println(un);
-      valor = int(dec) * 10 + int(un) - 528;
+      valor = int(bdec) * 10 + int(bun) - 528;
       //Serial.println(valor);
-      if((millis() - lastBarraTime > barraInterval)) {
-     	barra();
-	lastBarraTime=millis();
+
+      if((millis() - lastBarraTime > barraInterval) || lastBarraTime == 0) {
+     	  barra();
+	      lastBarraTime=millis();
       };
-    if(un1 != un) {
-     // animation();
-     cartel(); 
-     un1 = un;
-    }
+      if(un1 != un) {
+        // animation();
+        cartel(); 
+        un1 = un;
+      }
     }
   }
   lastConnected = client.connected();
