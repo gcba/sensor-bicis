@@ -13,7 +13,8 @@ char bun = '0';
 long valor = 0;
 
 byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
-IPAddress ip(192,168,1,96);
+IPAddress ip(172,29,41,10);
+IPAddress gateway(172,29,41,2);
 EthernetClient client;
 byte server[] = { 10,10,10,202}; 
 unsigned long lastConnectionTime = 0;
@@ -104,7 +105,7 @@ void animation() {
 
 
 void setup() {
-  Ethernet.begin(mac);
+  Ethernet.begin(mac,ip,gateway,gateway);
   digitalWrite(7,LOW);
   digitalWrite(5,LOW);
   delay(50);
