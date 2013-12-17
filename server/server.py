@@ -25,6 +25,24 @@ def totem():
 	cur.close() 
 	db.close()
 
+@app.route("/dia", methods=['POST', 'GET'])
+def dia():
+	db = sqlite3.connect(DATABASE)
+	cur = db.cursor()
+	dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
+	return str(dia)
+	cur.close() 
+	db.close()
+
+@app.route("/semana", methods=['POST', 'GET'])
+def semana():
+	db = sqlite3.connect(DATABASE)
+	cur = db.cursor()
+	semana = cur.execute("select count(*), strftime('%Y-%m-%d',millis) from bicis group by strftime('%Y%m%d', millis);").fetchall()
+	return str(semana)
+	cur.close() 
+	db.close()
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, threaded=True)
 
