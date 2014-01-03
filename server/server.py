@@ -4,7 +4,6 @@ import sqlite3
 #import ipdb
 from datetime import datetime
 from flask import Flask, render_template, request, g
-import ipdb
 
 app = Flask(__name__)
 DATABASE = '../analisis/base.db'
