@@ -1,62 +1,54 @@
 #!/usr/bin/env python
 
-import json
-import time
-import ipdb
 import sqlite3
+#import ipdb
 from datetime import datetime
-from flask import Flask, jsonify, render_template, request, g
-
+from flask import Flask, render_template, request, g
 
 app = Flask(__name__)
 DATABASE = '../analisis/base.db'
-db = sqlite3.connect(DATABASE)
-cur = db.cursor()
+lastPing = ""
 
 
 @app.route("/")
 def index():
     return render_template('index.html')
 
-#boardDebug = False
-#@app.route("/sensor", methods=['POST', 'GET'])
-#def sensor():
-#    global boardDebug
-#    if 'debug' in request.args.keys():
-#        if request.args['debug']=='true':
-#            boardDebug = True
-#        else:
-#            boardDebug = False
-#        return "Debuging: %s" % boardDebug
-#    else:
-#        if boardDebug:
-#            print request.data
-#            return "debug"
-#        else:
-#            print request.data
-#            dato = json.loads(request.data)
-#            ahora = datetime.utcnow().strftime("%s") 
-#            maxID = 1 + cur.execute("select max(id) from bicis").fetchall()[0][0] 
-#            cur.execute("insert into bicis values( %s , %s ,  %s, %s)" % (maxID,dato["tiempo"],  ahora , dato["pasadas"] ) )
-#            db.commit()
-#            return "clear"
-
 @app.route("/totem", methods=['POST', 'GET'])
 def totem():
-    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
-    anio = cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now'));").fetchall()[0][0]/7500
-    if True:#(dia > 0):
-        return "#####" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
-    #else:
-    #    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now', '-1 day'));").fetchall()[0][0]
-    #    return "#####" + "0" * (5-len(dia)) + dia
+	db = sqlite3.connect(DATABASE)
+	cur = db.cursor()
+	dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
+	anio = cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now'));").fetchall()[0][0]/7500
+	global lastPing
+	lastPing = "%s: %s" % (request.remote_addr, datetime.now())
+	return "#####" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
+	cur.close() 
+	db.close()
 
+@app.route("/dia", methods=['POST', 'GET'])
+def dia():
+	db = sqlite3.connect(DATABASE)
+	cur = db.cursor()
+	dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
+	return str(dia)
+	cur.close() 
+	db.close()
+
+@app.route("/semana", methods=['POST', 'GET'])
+def semana():
+	db = sqlite3.connect(DATABASE)
+	cur = db.cursor()
+	semana = cur.execute("select count(*), strftime('%Y-%m-%d',millis) from bicis group by strftime('%Y%m%d', millis);").fetchall()
+	return str(semana)
+	cur.close() 
+	db.close()
+
+@app.route("/lastping", methods=['POST', 'GET'])
+def lastping():
+	return lastPing
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
-
-
-
-
+    app.run(host="0.0.0.0", port=8080, threaded=True)
 
 #cur.execute("CREATE TABLE bicis(id INT, dateTime INT, millis INT, pasadas INT)")
