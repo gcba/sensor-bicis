@@ -68,7 +68,7 @@ def dashboard_data():
 
         'prom_porhora_anioactual': {
             'name':'Promedio por hora del día, año actual',
-            'q': """select strftime("%H",millis) hour , count(*) avg_ct from bicis where strftime("%Y",millis) = strftime("%Y", date('now'))  group by strftime("%H",millis);"""
+            'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y",millis) = strftime("%Y", date('now')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
         },
 
 
@@ -79,7 +79,7 @@ def dashboard_data():
 
         'prom_porhora_historico': {
             'name':"promedio por hora, historico",
-            'q': """select strftime("%H",millis) hour , count(*) avg_ct from bicis where strftime("%Y",millis) > "2012"  group by strftime("%H",millis);"""
+            'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y",millis) >= "2013" group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
         }
     }
 
