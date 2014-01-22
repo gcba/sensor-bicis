@@ -4,7 +4,8 @@
 import sqlite3
 #import ipdb
 from datetime import datetime
-from flask import Flask, render_template, request, g, jsonify
+from flask import Flask, render_template, request, g
+import json
 
 app = Flask(__name__)
 app.debug=True
@@ -42,7 +43,7 @@ def semana():
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
     semana = cur.execute("select count(*), strftime('%Y-%m-%d',millis) from bicis group by strftime('%Y%m%d', millis);").fetchall()
-    return jsonify(semana)
+    return json.dumps(semana)
     cur.close() 
     db.close()
 
@@ -54,26 +55,36 @@ def dashboard_data():
 
     #promedio x dia de la semana mes actual:
     queries={}
-    queries['semana'] = "select count(*), strftime('%Y-%m-%d',millis) from bicis group by strftime('%Y%m%d', millis);"
-    queries['diasemana_actual'] = """select dow, avg(avg_ct) from (select strftime("%w",millis) dow , count(*) avg_ct from bicis where strftime("%Y-%m",millis) = strftime("%Y-%m",date('now'))  group by strftime("%Y-%m-%d",millis)) group by dow"""
+    # queries['semana'] = "select count(*), strftime('%Y-%m-%d',millis) from bicis group by strftime('%Y%m%d', millis);"
+    queries= {
+        'diasemana_actual' : {
+            'name':"Bicis por día esta semana",
+            'q':"""select dow, avg(avg_ct) from (select strftime("%w",millis) dow , count(*) avg_ct from bicis where strftime("%Y-%m",millis) = strftime("%Y-%m",date('now'))  group by strftime("%Y-%m-%d",millis)) group by dow"""
+        },
+        'prom_diario_mensual' : {
+             'name' : "Bicis por día promedio", 
+             'q':"""select mes, avg(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where date(millis) > "2012" group by strftime("%Y-%m-%d",millis)) group by mes;"""
+        },
 
-    #hoy
-    queries['prom_diasemana_actual'] = """select count(*) from bicis where date(millis) = date('now');"""
+        'prom_porhora_anioactual': {
+            'name':'Promedio por hora del día, año actual',
+            'q': """select strftime("%H",millis) hour , count(*) avg_ct from bicis where strftime("%Y",millis) = strftime("%Y", date('now'))  group by strftime("%H",millis);"""
+        },
 
-# promedio diario mensual
-    queries['prom_diario_mensual'] = """select mes, avg(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis  group by strftime("%Y-%m-%d",millis)) group by mes;"""
 
-    #Totales mensuales
-    queries['totales_mensual'] = """select mes, sum(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where strftime("%Y",millis) >= "2013" group by strftime("%Y-%m-%d",millis)) group by mes;"""
+        'totales_mensual': {
+            'name':"Bicis por mes",
+            'q': """select mes, sum(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where strftime("%Y",millis) >= "2013" group by strftime("%Y-%m-%d",millis)) group by mes;"""
+        },
 
-# Promedio por hora del día, año actual
-    queries['prom_porhora_anioactual'] = """select strftime("%H",millis) hour , count(*) avg_ct from bicis where strftime("%Y",millis) = strftime("%Y",date('now'))  group by strftime("%H",millis);"""
+        'prom_porhora_historico': {
+            'name':"promedio por hora, historico",
+            'q': """select strftime("%H",millis) hour , count(*) avg_ct from bicis where strftime("%Y",millis) > "2012"  group by strftime("%H",millis);"""
+        }
+    }
 
-    # promedio por hora, historico
-    queries['prom_porhora_historico'] = """select strftime("%H",millis) hour , count(*) avg_ct from bicis where strftime("%Y",millis) > "2012"  group by strftime("%H",millis);"""
-
-    data = [ (k, cur.execute(v).fetchall() ) for (k,v) in queries.iteritems()]
-    return jsonify(data)
+    data = [ (k, v['name'], cur.execute(v['q']).fetchall() ) for (k,v) in queries.iteritems()]
+    return json.dumps(data)
     cur.close() 
     db.close()
 
