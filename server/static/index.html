@@ -81,7 +81,8 @@ function plotear(data,titulo,id) {
     .tickSize(width);
     // .ticks(10, "%");
 
-    var plotdiv = d3.select("body").append("div").html(titulo);
+    var plotdiv = d3.select("body").append("span")
+    plotdiv.append("div").html(titulo);
     var svg = plotdiv.append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
