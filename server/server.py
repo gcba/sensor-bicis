@@ -5,7 +5,7 @@ import sqlite3
 #import ipdb
 from datetime import datetime
 from flask import Flask, render_template, request, g
-import json
+import json, math
 
 app = Flask(__name__)
 app.debug=True
@@ -22,7 +22,7 @@ def totem():
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
     dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
-    anio = cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now'));").fetchall()[0][0]/7500
+    anio = int(math.ceil(cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now'));").fetchall()[0][0]/7500.0))
     global lastPing
     lastPing = "%s: %s" % (request.remote_addr, datetime.now())
     return "#####" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
