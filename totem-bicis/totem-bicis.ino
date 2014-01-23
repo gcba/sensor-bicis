@@ -13,10 +13,10 @@ char bun = '0';
 long valor = 0;
 
 byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
-IPAddress ip(172,29,41,10);
-IPAddress gateway(172,29,41,2);
+IPAddress ip(XXX,XXX,XXX,XXX);
+IPAddress gateway(XXX,XXX,XXX,XXX);
 EthernetClient client;
-byte server[] = { 10,10,10,202}; 
+byte server[] = { XXX,XXX,XXX,XXX};
 unsigned long lastConnectionTime = 0;
 unsigned long lastBarraTime = 0;
 boolean lastConnected = false;
@@ -29,7 +29,7 @@ const unsigned long barraInterval =  86400000;
 void httpRequest() {
   if (client.connect(server, 8080)) {
     client.println("GET /totem HTTP/1.0");
-    client.println("Host: 10.10.10.202");
+    client.println("Host: XXX.XXX.XXX.XXX");
     client.println("User-Agent: arduino-ethernet");
     //client.println("Accept: */*");
     client.println("Connection: close");
