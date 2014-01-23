@@ -66,6 +66,11 @@ def dashboard_data():
              'q':"""select mes, avg(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where date(millis) > "2012" group by strftime("%Y-%m-%d",millis)) group by mes;"""
         },
 
+        'prom_porhora_hoy': {
+            'name':'Bicis por hora del día, hoy',
+            'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y-%m-%d",millis) = strftime("%Y-%m-%d", date('now')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
+        },
+
         'prom_porhora_anioactual': {
             'name':'Promedio por hora del día, año actual',
             'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y",millis) = strftime("%Y", date('now')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
