@@ -1,6 +1,8 @@
 sensor-bicis
 ============
 
+Version: Alpha-1.0
+
 Sensor de Tránsito de Bicicletas
 
 
