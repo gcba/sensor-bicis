@@ -21,8 +21,8 @@ def index():
 def totem():
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
-    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
-    anio = cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now'));").fetchall()[0][0]/7500
+    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now','localtime'));").fetchall()[0][0]
+    anio = 13 + cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now','localtime'));").fetchall()[0][0]/7500
     global lastPing
     lastPing = "%s: %s" % (request.remote_addr, datetime.now())
     return "#####" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
@@ -33,7 +33,7 @@ def totem():
 def dia():
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
-    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now'));").fetchall()[0][0]
+    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now','localtime'));").fetchall()[0][0]
     return str(dia)
     cur.close() 
     db.close()
@@ -64,6 +64,11 @@ def dashboard_data():
         'prom_diario_mensual' : {
              'name' : "Bicis por día promedio", 
              'q':"""select mes, avg(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where date(millis) > "2012" group by strftime("%Y-%m-%d",millis)) group by mes;"""
+        },
+
+        'prom_porhora_hoy': {
+            'name':'Bicis por hora del día, hoy',
+            'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y-%m-%d",millis) = strftime("%Y-%m-%d", date('now','localtime')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
         },
 
         'prom_porhora_anioactual': {
