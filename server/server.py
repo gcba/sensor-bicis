@@ -3,15 +3,18 @@
 
 import sqlite3
 #import ipdb
-from datetime import datetime
+from datetime import datetime,timedelta
 from flask import Flask, render_template, request, g
 import json
 
 app = Flask(__name__)
 app.debug=True
 DATABASE = '../analisis/base.db'
-lastPing = ""
+lastPing = (None, None) 
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return 'Esta no es la página que estas buscando', 404
 
 @app.route("/")
 def index():
@@ -24,7 +27,7 @@ def totem():
     dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now','localtime'));").fetchall()[0][0]
     anio = 13 + cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now','localtime'));").fetchall()[0][0]/7500
     global lastPing
-    lastPing = "%s: %s" % (request.remote_addr, datetime.now())
+    lastPing = (request.remote_addr, datetime.now())
     return "#####" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
     cur.close() 
     db.close()
@@ -97,7 +100,16 @@ def dashboard_data():
 
 @app.route("/lastping", methods=['POST', 'GET'])
 def lastping():
-    return lastPing
+    return "%s : %s" % lastPing
+
+@app.route("/totemstatus", methods=['GET'])
+def totemstatus():
+    try:
+        if ((datetime.now() - lastPing[1]) < timedelta(seconds=30)):
+            return 'Totem OK', 200 
+    except:
+        pass
+    return 'Totem fuera de servicio. Hace mas de 30 segundos que no se conecta. Contactar a DGGOBE', 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, threaded=True)
