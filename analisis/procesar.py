@@ -45,7 +45,7 @@ if __name__ == "__main__":
             if vars(args)['inicio']:
                 strtime = "%s" %  (inicio+datetime.timedelta(milliseconds=int(t)) )
             else:
-                strtime = "%s" %  (datetime.now())
+                strtime = "%s" %  (datetime.datetime.now())
 
         except:
             continue

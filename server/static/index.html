@@ -1,58 +1,116 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+3<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard de Bicicletas</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="http://www.buenosaires.gob.ar/estilos/BAStrap/css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="http://www.buenosaires.gob.ar/estilos/BAStrap/css/bootstrap-responsive.css" rel="stylesheet">
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,600,700,800,300' rel='stylesheet' type='text/css'>
+    <style>
+    .progress-meter .background {
+      fill: #ccc;
+    }
 
-.bar {
-  fill: steelblue;
-}
+    .progress-meter .foreground {
+      fill: #000;
+    }
 
-.bar:hover {
-  fill: brown;
-}
+    .progress-meter text {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 24px;
+      font-weight: bold;
+    }
 
-.axis {
-  font: 10px sans-serif;
-}
+    .bar {
+      fill: steelblue;
+    }
 
-.axis path {
-  display: none;
-}
+    .bar:hover {
+      fill: brown;
+    }
 
-.axis line {
-  shape-rendering: crispEdges;
-  stroke: #000;
-}
+    .axis {
+      font: 10px sans-serif;
+    }
 
-.axis .minor line {
-  stroke: #777;
-  stroke-dasharray: 2,2;
-}
+    .axis path {
+      display: none;
+    }
+
+    .axis line {
+      shape-rendering: crispEdges;
+      stroke: #000;
+    }
+
+    .axis .minor line {
+      stroke: #777;
+      stroke-dasharray: 2,2;
+    }
 
 
-.x.axis path {
-  display: none;
-}
+    .x.axis path {
+      display: none;
+    }
 
-.axis .minor line {
-  stroke: #777;
-  stroke-dasharray: 2,2;
-}
+    .axis .minor line {
+      stroke: #777;
+      stroke-dasharray: 2,2;
+    }
 
-</style>
+    </style>
+
+  </head>
 <body>
 <!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
 
 
+    <div class="gcba-fixed-top">
+      <div class="header-gcba">
+          <div class="header-inner">
+            <div class="container">
+              <div id="logo">Buenos Aires Ciudad</div>
+              <h2 class="slogan">Bicis ;-)</h2>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <h1>Estado del sensor de Bicicletas</h1>
+    <div id=dashboard></div>
+
+    <footer class="footer">
+      <hr class="footer-ba">
+    </footer>
+    <script src="http://www.buenosaires.gob.ar/estilos/BAStrap/js/jquery.js"></script>
+    <script src="http://www.buenosaires.gob.ar/estilos/BAStrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
+
+
 <script src="d3.v3.min.js"></script>
+
+
+
 <script>
 
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
+
+var margin = {top: 10, right: 10, bottom: 10, left: 10},
 // width = 960 - margin.left - margin.right,
-width = 400 - margin.left - margin.right,
+width = 250 - margin.left - margin.right,
 // height = 500 - margin.top - margin.bottom;
 height = 300 - margin.top - margin.bottom;
 
-d3.text("/dia", function (error, texto) { d3.select("body").append("div").html("Hoy:" + texto) } );
+d3.text("/dia", function (error, texto) { 
+          d3.select("#dashboard").append("div").html("Hoy:" + texto) 
+} );
+
+d3.text("/totemstatus", function (error, texto) { 
+          d3.select("#dashboard").append("div").html(texto) 
+} );
+
+// plots
 
 d3.json("/dashboard.json", function(error, data) {
     for (plot in data) 
@@ -81,8 +139,8 @@ function plotear(data,titulo,id) {
     .tickSize(width);
     // .ticks(10, "%");
 
-    var plotdiv = d3.select("body").append("span")
-    plotdiv.append("div").html(titulo);
+    var plotdiv = d3.select("#dashboard").append("span")
+    plotdiv.append("span").html(titulo);
     var svg = plotdiv.append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
