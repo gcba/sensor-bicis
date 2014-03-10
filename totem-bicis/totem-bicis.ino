@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <Ethernet.h>
+#include <avr/wdt.h>
 
 char cMil = '0';
 char dMil = '0';
@@ -27,6 +28,7 @@ const unsigned long barraInterval =  86400000;
 
 
 void httpRequest() {
+  wdt_reset();
   if (client.connect(server, 8080)) {
     client.println("GET /totem HTTP/1.0");
     client.println("Host: 10.10.10.202");
@@ -39,9 +41,11 @@ void httpRequest() {
     client.stop();
   }
   lastConnectionTime = millis();
+  wdt_reset();
 }
 
 void cartel(){
+  wdt_reset();
   Serial.end();
   digitalWrite(7,LOW);
   delay(1000);
@@ -49,6 +53,7 @@ void cartel(){
   delay(4000);
   Serial.print("$1000");
   Serial.println(dMil);
+  wdt_reset();
   delay(4000);
   Serial.print("$2");
   Serial.print(uMil);
@@ -56,6 +61,7 @@ void cartel(){
   Serial.print(dec);
   Serial.println(un);
   Serial.flush();
+  wdt_reset();
 }
 void dot(){
   Serial.end();
@@ -117,6 +123,7 @@ void setup() {
   delay(1000);
   Serial.print("$1    $2    ");
   Serial.flush();
+  wdt_enable(WDTO_8S);
 /*
   while(true){
   for (i=1; i<101; i++) {
@@ -140,6 +147,7 @@ void setup() {
 }
 
 void loop() {
+  wdt_reset();
   if (client.available()) {
     dMil = uMil;
     uMil = cent;
