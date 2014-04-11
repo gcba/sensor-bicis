@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.debug=True
 DATABASE = '../analisis/base.db'
 lastPing = (None, None) 
+restartear = False
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -28,7 +29,14 @@ def totem():
     anio = 13 + cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now','localtime'));").fetchall()[0][0]/7500
     global lastPing
     lastPing = (request.remote_addr, datetime.now())
-    return "#####" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
+    global restartear
+    if int(datetime.now().strftime("%H%M%S")) < 1:
+        restartear = True
+    if restartear == False:
+        return "#####" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
+    else:
+        restartear = False
+        return "####R" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
     cur.close() 
     db.close()
 
@@ -40,6 +48,12 @@ def dia():
     return str(dia)
     cur.close() 
     db.close()
+
+@app.route("/restartotem", methods=['POST', 'GET'])
+def restartotem():
+    global restartear
+    restartear = True
+    return str("Restaring in 5...")
 
 @app.route("/semana", methods=['POST', 'GET'])
 def semana():

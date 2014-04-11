@@ -14,10 +14,12 @@ char bun = '0';
 long valor = 0;
 
 byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
-IPAddress ip(172,29,41,10);
-IPAddress gateway(172,29,41,2);
+//IPAddress ip(172,29,41,10);
+//IPAddress gateway(172,29,41,2);
+IPAddress ip(192,168,1,125);
+IPAddress gateway(192,168,1,1);
 EthernetClient client;
-byte server[] = { 10,10,10,202}; 
+byte server[] = { 192,168,1,124}; 
 unsigned long lastConnectionTime = 0;
 unsigned long lastBarraTime = 0;
 boolean lastConnected = false;
@@ -31,7 +33,7 @@ void httpRequest() {
   wdt_reset();
   if (client.connect(server, 8080)) {
     client.println("GET /totem HTTP/1.0");
-    client.println("Host: 10.10.10.202");
+    client.println("Host: 192.168.1.124");
     client.println("User-Agent: arduino-ethernet");
     //client.println("Accept: */*");
     client.println("Connection: close");
@@ -112,17 +114,24 @@ void animation() {
 
 void setup() {
   Ethernet.begin(mac,ip,gateway,gateway);
+  pinMode(7, OUTPUT);
+  pinMode(5, OUTPUT);
   digitalWrite(7,LOW);
   digitalWrite(5,LOW);
   delay(50);
   digitalWrite(5,HIGH);
   Serial.begin(9600);
+  Serial.flush();
+  digitalWrite(5,LOW);
+  delay(50);
+  digitalWrite(5,HIGH);
   delay(50);
   int i;
   //dot();
   delay(1000);
   Serial.print("$1    $2    ");
   Serial.flush();
+
   wdt_enable(WDTO_8S);
 /*
   while(true){
@@ -154,30 +163,28 @@ void loop() {
     cent = dec;
     dec = un;
     un = char(client.read());
-    if (dMil == '#' &&  uMil == '#' && cent == '#' && dec == '#' && un == '#'){
-      dMil = client.read();
-      uMil = client.read();
-      cent = client.read();
-      dec = client.read();
-      un = client.read();
-      bdec = client.read();
-      bun = client.read();
-      //Serial.print(dMil);
-      //Serial.print(uMil);
-      //Serial.print(cent);
-      //Serial.print(dec);
-      //Serial.println(un);
-      valor = int(bdec) * 10 + int(bun) - 528;
-      //Serial.println(valor);
+    if (dMil == '#' &&  uMil == '#' && cent == '#' && dec == '#'){
+      if (un == '#'){
+        dMil = client.read();
+        uMil = client.read();
+        cent = client.read();
+        dec = client.read();
+        un = client.read();
+        bdec = client.read();
+        bun = client.read();
+        valor = int(bdec) * 10 + int(bun) - 528;
 
-      if((millis() - lastBarraTime > barraInterval) || lastBarraTime == 0) {
-     	  barra();
-	      lastBarraTime=millis();
-      };
-      if(un1 != un) {
-        // animation();
-        cartel(); 
-        un1 = un;
+        if((millis() - lastBarraTime > barraInterval) || lastBarraTime == 0) {
+       	  barra();
+  	      lastBarraTime=millis();
+        };
+        if(un1 != un) {
+          cartel(); 
+          un1 = un;
+        }
+      }
+      if (un == 'R'){
+        setup();
       }
     }
   }
