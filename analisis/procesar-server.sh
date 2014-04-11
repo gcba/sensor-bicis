@@ -4,7 +4,16 @@
 # writes every line received to /tmp/valores-sensors.csv, and outputs only detected bikes and 
 # 10 seconds pressure readings to stdout (should be redirected to a log file)
 
-nc -d $SENSOR_HOST 54321 \
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+source ./bin/activate
+
+if [ -z "$SENSOR_HOST" ]; then
+    echo "Defina la variable \$SENSOR_HOST"
+    exit 1;
+fi
+
+nc -v -d $SENSOR_HOST 54321 \
 | awk '( (NR > 100) && (NF == 3) && ($0 !~ /[A-Za-z]/)  ) { print }' \
 | tee -a /tmp/valores-sensor.csv \
 | ./procesar.py \
