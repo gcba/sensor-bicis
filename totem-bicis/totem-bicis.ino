@@ -22,6 +22,7 @@ EthernetClient client;
 byte server[] = { 192,168,1,124}; 
 unsigned long lastConnectionTime = 0;
 unsigned long lastBarraTime = 0;
+unsigned long lastSuccess = 0;
 boolean lastConnected = false;
 // cada cuanto ir a buscar datos al server
 const unsigned long readingInterval =  1000;
@@ -110,19 +111,21 @@ void animation() {
   barra();
 }
 
-
+void resetear() {
+    wdt_enable(WDTO_15MS);  
+    for(;;) { };  
+}
 
 void setup() {
   Ethernet.begin(mac,ip,gateway,gateway);
+  pinMode(9, OUTPUT);
   pinMode(7, OUTPUT);
   pinMode(5, OUTPUT);
   digitalWrite(7,LOW);
   digitalWrite(5,LOW);
-  delay(50);
-  digitalWrite(5,HIGH);
+  delay(200);
   Serial.begin(9600);
   Serial.flush();
-  digitalWrite(5,LOW);
   delay(50);
   digitalWrite(5,HIGH);
   delay(50);
@@ -173,7 +176,6 @@ void loop() {
         bdec = client.read();
         bun = client.read();
         valor = int(bdec) * 10 + int(bun) - 528;
-
         if((millis() - lastBarraTime > barraInterval) || lastBarraTime == 0) {
        	  barra();
   	      lastBarraTime=millis();
@@ -184,8 +186,9 @@ void loop() {
         }
       }
       if (un == 'R'){
-        setup();
+        resetear();
       }
+      lastSuccess = millis();
     }
   }
   lastConnected = client.connected();
@@ -193,7 +196,12 @@ void loop() {
     client.stop();
   }
   if(!client.connected() && (millis() - lastConnectionTime > readingInterval)) {
+    digitalWrite(9,true);
     httpRequest();
+    digitalWrite(9,false);
   }
   lastConnected = client.connected();
+  if (millis() - lastSuccess > 20000){
+    resetear();
+  }
 }
