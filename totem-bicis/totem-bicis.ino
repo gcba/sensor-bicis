@@ -13,13 +13,11 @@ char bdec = '0';
 char bun = '0';
 long valor = 0;
 
-byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0x8B };
-//IPAddress ip(172,29,41,10);
-//IPAddress gateway(172,29,41,2);
-IPAddress ip(192,168,1,125);
-IPAddress gateway(192,168,1,1);
+byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0xCA };
+IPAddress ip(172,29,41,10);
+IPAddress gateway(172,29,41,2);
 EthernetClient client;
-byte server[] = { 192,168,1,124}; 
+byte server[] = { 10,10,10,202}; 
 unsigned long lastConnectionTime = 0;
 unsigned long lastBarraTime = 0;
 unsigned long lastSuccess = 0;
@@ -34,7 +32,7 @@ void httpRequest() {
   wdt_reset();
   if (client.connect(server, 8080)) {
     client.println("GET /totem HTTP/1.0");
-    client.println("Host: 192.168.1.124");
+    client.println("Host: 10.10.10.202");
     client.println("User-Agent: arduino-ethernet");
     //client.println("Accept: */*");
     client.println("Connection: close");
@@ -117,6 +115,7 @@ void resetear() {
 }
 
 void setup() {
+  wdt_disable();
   Ethernet.begin(mac,ip,gateway,gateway);
   pinMode(9, OUTPUT);
   pinMode(7, OUTPUT);
@@ -135,7 +134,7 @@ void setup() {
   Serial.print("$1    $2    ");
   Serial.flush();
 
-  wdt_enable(WDTO_8S);
+  /*wdt_enable(WDTO_8S);*/
 /*
   while(true){
   for (i=1; i<101; i++) {
@@ -186,7 +185,7 @@ void loop() {
         }
       }
       if (un == 'R'){
-        resetear();
+        /*resetear();*/
       }
       lastSuccess = millis();
     }
@@ -197,11 +196,13 @@ void loop() {
   }
   if(!client.connected() && (millis() - lastConnectionTime > readingInterval)) {
     digitalWrite(9,true);
+    
     httpRequest();
     digitalWrite(9,false);
   }
   lastConnected = client.connected();
   if (millis() - lastSuccess > 20000){
-    resetear();
+    /*resetear();*/
   }
+
 }
