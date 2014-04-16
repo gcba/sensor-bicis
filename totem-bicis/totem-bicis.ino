@@ -13,9 +13,10 @@ char bdec = '0';
 char bun = '0';
 long valor = 0;
 
-byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0xCA };
+byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0xe0 };
 IPAddress ip(172,29,41,10);
 IPAddress gateway(172,29,41,2);
+IPAddress mask(255,255,255,0);
 EthernetClient client;
 byte server[] = { 10,10,10,202}; 
 unsigned long lastConnectionTime = 0;
@@ -23,13 +24,15 @@ unsigned long lastBarraTime = 0;
 unsigned long lastSuccess = 0;
 boolean lastConnected = false;
 // cada cuanto ir a buscar datos al server
-const unsigned long readingInterval =  1000;
+const unsigned long readingInterval =  3000;
 // intervalo de update de la barra
 const unsigned long barraInterval =  86400000;
 
 
 void httpRequest() {
-  wdt_reset();
+  /*wdt_reset();*/
+  wdt_disable() ; // los requests tardan mas de 8S por desgracia
+  lastConnectionTime = millis();
   if (client.connect(server, 8080)) {
     client.println("GET /totem HTTP/1.0");
     client.println("Host: 10.10.10.202");
@@ -41,8 +44,8 @@ void httpRequest() {
   else {
     client.stop();
   }
-  lastConnectionTime = millis();
   wdt_reset();
+  wdt_enable(WDTO_8S);
 }
 
 void cartel(){
@@ -116,7 +119,17 @@ void resetear() {
 
 void setup() {
   wdt_disable();
-  Ethernet.begin(mac,ip,gateway,gateway);
+  // give the ethernet module time to boot up:
+  delay(1000);
+
+  /*Serial.println("Acquiring IP address");*/
+  /*while(! Ethernet.begin(mac) ) {*/
+  /*      Serial.println("Ethernet.begin failed. Retry.");//wait for dhcp*/
+  /*   }*/
+
+  Ethernet.begin(mac,ip,gateway,gateway,mask);
+  delay(1000);
+ 
   pinMode(9, OUTPUT);
   pinMode(7, OUTPUT);
   pinMode(5, OUTPUT);
@@ -134,27 +147,9 @@ void setup() {
   Serial.print("$1    $2    ");
   Serial.flush();
 
-  /*wdt_enable(WDTO_8S);*/
-/*
-  while(true){
-  for (i=1; i<101; i++) {
-        valor=i;
-	barra();
-  	delay(500);
-  };
-  for (; i>1; i--) {
-        valor=i;
-	barra();
-  	delay(500);
-  };
- }
-*/
+  wdt_enable(WDTO_8S);
 
-  //animation();
-  //Serial.println("$10000");
-  //Serial.println("$20000");
-  //Serial.print("My IP address: ");
-  //Serial.println(Ethernet.localIP());
+
 }
 
 void loop() {
@@ -185,12 +180,12 @@ void loop() {
         }
       }
       if (un == 'R'){
-        /*resetear();*/
+        resetear();
       }
       lastSuccess = millis();
     }
   }
-  lastConnected = client.connected();
+  /*lastConnected = client.connected();*/
   if (!client.connected() && lastConnected) {
     client.stop();
   }
