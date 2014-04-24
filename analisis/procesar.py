@@ -37,7 +37,7 @@ if __name__ == "__main__":
     f=Filter()
     f.umbral = 5 
     last_time = datetime.now()
-    pressure_report_interval = timedelta(seconds=5)
+    pressure_report_interval = timedelta(minutes=3)
     for e in sys.stdin :
         try:
             t = int(e.split()[1])
