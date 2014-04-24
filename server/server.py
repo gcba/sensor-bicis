@@ -49,6 +49,21 @@ def dia():
     cur.close() 
     db.close()
 
+@app.route("/sensor", methods=['POST', 'GET'])
+def sensor():
+    db = sqlite3.connect(DATABASE)
+    cur = db.cursor()
+    presion = cur.execute("select * from presion order by rowid desc limit 1").fetchall()[0]
+    estado = "ERROR desconocido en el status del sensor"
+    try:
+        estado =  (datetime.now() - datetime.strptime(presion[0], "%Y-%m-%d %H:%M:%S")).total_seconds() < 5000 and "OK" or "ERROR: no se estan recibiendo datos desde el sensor" 
+    except:
+        pass
+    return json.dumps( [ estado, presion] )
+    cur.close() 
+    db.close()
+
+
 @app.route("/restartotem", methods=['POST', 'GET'])
 def restartotem():
     global restartear
