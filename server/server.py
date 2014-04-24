@@ -56,7 +56,7 @@ def sensor():
     presion = cur.execute("select * from presion order by rowid desc limit 1").fetchall()[0]
     estado = "ERROR desconocido en el status del sensor"
     try:
-        estado =  (datetime.now() - datetime.strptime(presion[0], "%Y-%m-%d %H:%M:%S")).total_seconds() < 5000 and "OK" or "ERROR: no se estan recibiendo datos desde el sensor" 
+        estado =  (datetime.now() - datetime.strptime(presion[0], "%Y-%m-%d %H:%M:%S")) < timedelta(minutes=5) and "OK" or "ERROR: no se estan recibiendo datos desde el sensor" 
     except:
         pass
     return json.dumps( [ estado, presion] )
