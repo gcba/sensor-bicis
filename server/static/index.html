@@ -110,6 +110,12 @@ d3.text("/totemstatus", function (error, texto) {
           d3.select("#dashboard").append("div").html(texto) 
 } );
 
+d3.text("/sensor", function (error, texto) { 
+          d3.select("#dashboard").append("div").html(texto) 
+} );
+
+
+
 // plots
 
 d3.json("/dashboard.json", function(error, data) {
