@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import zmq
 from datetime import datetime
 #import ipdb
