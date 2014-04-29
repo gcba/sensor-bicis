@@ -89,27 +89,28 @@ def dashboard_data():
     queries={}
     # queries['semana'] = "select count(*), strftime('%Y-%m-%d',millis) from bicis group by strftime('%Y%m%d', millis);"
     queries= {
-        'diasemana_actual' : {
-            'name':"Bicis por día en la semana (0:Domingo)",
-            'q':"""select dow, avg(avg_ct) from (select strftime("%w",millis) dow , count(*) avg_ct from bicis where strftime("%Y-%m",millis) = strftime("%Y-%m",date('now'))  group by strftime("%Y-%m-%d",millis)) group by dow"""
-        },
-        'prom_diario_mensual' : {
-             'name' : "Cantidad de bicis por día en los ultimos meses", 
-             'q':"""select mes, avg(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where date(millis) > "2012" group by strftime("%Y-%m-%d",millis)) group by mes;"""
-        },
-
-        'prom_porhora_hoy': {
+        '1prom_porhora_hoy': {
             'name':'Bicis por hora hoy',
             'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y-%m-%d",millis) = strftime("%Y-%m-%d", date('now','localtime')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
         },
 
-        'prom_porhora_anioactual': {
+        '2diasemana_actual' : {
+            'name':"Ultimos 7 dias (0:Domingo)",
+            'q':"""select case cast (strftime('%w', millis) as integer)  when 0 then 'dom' when 1 then 'lu' when 2 then 'mar' when 3 then 'mi' when 4 then 'jue' when 5 then 'vi' when 6 then 'sa' else '???' end as  dow , count(*)  from bicis where (julianday("now") - julianday(millis)) < 10  group by dow order by millis"""
+        },
+        '3prom_diario_mensual' : {
+             'name' : "Cantidad de bicis por día en los ultimos meses", 
+             'q':"""select mes, avg(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where date(millis) > "2012" group by strftime("%Y-%m-%d",millis)) group by mes;"""
+        },
+
+
+        '4prom_porhora_anioactual': {
             'name':'Promedio por hora del día',
             'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y",millis) = strftime("%Y", date('now')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
         },
 
 
-        'totales_mensual': {
+        '5totales_mensual': {
             'name':"Bicis por mes",
             'q': """select mes, sum(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where strftime("%Y",millis) >= "2013" group by strftime("%Y-%m-%d",millis)) group by mes;"""
         },
@@ -120,7 +121,7 @@ def dashboard_data():
         # }
     }
 
-    data = [ (k, v['name'], cur.execute(v['q']).fetchall() ) for (k,v) in queries.iteritems()]
+    data = [ (k, v['name'], cur.execute(v['q']).fetchall() ) for (k,v) in sorted(queries.iteritems())]
     return json.dumps(data)
     cur.close() 
     db.close()

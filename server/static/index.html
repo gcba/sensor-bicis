@@ -96,7 +96,7 @@
 <script>
 
 
-var margin = {top: 10, right: 10, bottom: 10, left: 10},
+var margin = {top: 20, right:210, bottom: 20, left: 20},
 width = 960 - margin.left - margin.right,
 //width = 250 - margin.left - margin.right,
 // height = 500 - margin.top - margin.bottom;
@@ -110,8 +110,9 @@ d3.text("/totemstatus", function (error, texto) {
           d3.select("#dashboard").append("div").html(texto) 
 } );
 
-d3.text("/sensor", function (error, texto) { 
-          d3.select("#dashboard").append("div").html(texto) 
+d3.json("/sensor", function (error, data) { 
+          d3.select("#dashboard").append("div").attr("class","sensor").attr("id","status").html(data[0]) 
+          d3.select("#dashboard").append("div").attr("class","sensor").attr("id","presion").html(data[1][1]) 
 } );
 
 
@@ -141,7 +142,7 @@ function plotear(data,titulo,id) {
 
     var yAxis = d3.svg.axis()
     .scale(y)
-    .orient("left")
+    .orient("right")
     .tickSize(width);
     // .ticks(10, "%");
 
@@ -164,7 +165,7 @@ function plotear(data,titulo,id) {
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
-    svg.append("g")
+    gy = svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
     // .append("text")
@@ -174,6 +175,9 @@ function plotear(data,titulo,id) {
     //   .attr("dy", ".71em")
     //   .style("text-anchor", "end")
     //   .text(titulo);
+
+    gy.selectAll("g").filter(function(d) { return d; })
+        .classed("minor", true);
 
     svg.selectAll(".bar")
       .data(data)
