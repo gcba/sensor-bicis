@@ -1,4 +1,4 @@
-3<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>Dashboard de Bicicletas</title>
@@ -97,8 +97,8 @@
 
 
 var margin = {top: 10, right: 10, bottom: 10, left: 10},
-// width = 960 - margin.left - margin.right,
-width = 250 - margin.left - margin.right,
+width = 960 - margin.left - margin.right,
+//width = 250 - margin.left - margin.right,
 // height = 500 - margin.top - margin.bottom;
 height = 300 - margin.top - margin.bottom;
 
@@ -120,7 +120,7 @@ d3.text("/sensor", function (error, texto) {
 
 d3.json("/dashboard.json", function(error, data) {
     for (plot in data) 
-        plotear(data[plot][2],data[plot][1]);
+        plotear(data[plot][2],data[plot][1],data[plot][0]);
 
     });
     
@@ -141,12 +141,12 @@ function plotear(data,titulo,id) {
 
     var yAxis = d3.svg.axis()
     .scale(y)
-    .orient("right")
+    .orient("left")
     .tickSize(width);
     // .ticks(10, "%");
 
-    var plotdiv = d3.select("#dashboard").append("span")
-    plotdiv.append("span").html(titulo);
+    var plotdiv = d3.select("#dashboard").append("div").attr("class","plot").attr("id",id)
+    plotdiv.append("div").html(titulo);
     var svg = plotdiv.append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)

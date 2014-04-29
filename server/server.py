@@ -90,21 +90,21 @@ def dashboard_data():
     # queries['semana'] = "select count(*), strftime('%Y-%m-%d',millis) from bicis group by strftime('%Y%m%d', millis);"
     queries= {
         'diasemana_actual' : {
-            'name':"Bicis por día esta semana",
+            'name':"Bicis por día en la semana (0:Domingo)",
             'q':"""select dow, avg(avg_ct) from (select strftime("%w",millis) dow , count(*) avg_ct from bicis where strftime("%Y-%m",millis) = strftime("%Y-%m",date('now'))  group by strftime("%Y-%m-%d",millis)) group by dow"""
         },
         'prom_diario_mensual' : {
-             'name' : "Bicis por día promedio", 
+             'name' : "Cantidad de bicis por día en los ultimos meses", 
              'q':"""select mes, avg(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where date(millis) > "2012" group by strftime("%Y-%m-%d",millis)) group by mes;"""
         },
 
         'prom_porhora_hoy': {
-            'name':'Bicis por hora del día, hoy',
+            'name':'Bicis por hora hoy',
             'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y-%m-%d",millis) = strftime("%Y-%m-%d", date('now','localtime')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
         },
 
         'prom_porhora_anioactual': {
-            'name':'Promedio por hora del día, año actual',
+            'name':'Promedio por hora del día',
             'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y",millis) = strftime("%Y", date('now')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
         },
 
@@ -114,10 +114,10 @@ def dashboard_data():
             'q': """select mes, sum(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where strftime("%Y",millis) >= "2013" group by strftime("%Y-%m-%d",millis)) group by mes;"""
         },
 
-        'prom_porhora_historico': {
-            'name':"promedio por hora, historico",
-            'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y",millis) >= "2013" group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
-        }
+        # 'prom_porhora_historico': {
+        #     'name':"promedio por hora, historico",
+        #     'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y",millis) >= "2013" group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
+        # }
     }
 
     data = [ (k, v['name'], cur.execute(v['q']).fetchall() ) for (k,v) in queries.iteritems()]
