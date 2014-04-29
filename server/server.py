@@ -95,7 +95,7 @@ def dashboard_data():
         },
 
         '2diasemana_actual' : {
-            'name':"Ultimos 7 dias (0:Domingo)",
+            'name':"Ultimos 7 dias",
             'q':"""select case cast (strftime('%w', millis) as integer)  when 0 then 'dom' when 1 then 'lu' when 2 then 'mar' when 3 then 'mi' when 4 then 'jue' when 5 then 'vi' when 6 then 'sa' else '???' end as  dow , count(*)  from bicis where (julianday("now") - julianday(millis)) < 10  group by dow order by millis"""
         },
         '3prom_diario_mensual' : {

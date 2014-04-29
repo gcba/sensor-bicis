@@ -103,7 +103,7 @@ width = 960 - margin.left - margin.right,
 height = 300 - margin.top - margin.bottom;
 
 d3.text("/dia", function (error, texto) { 
-          d3.select("#dashboard").append("div").html("Hoy:" + texto) 
+          d3.select("#dashboard").append("div").html("Bicis hoy:" + texto) 
 } );
 
 d3.text("/totemstatus", function (error, texto) { 
@@ -111,8 +111,8 @@ d3.text("/totemstatus", function (error, texto) {
 } );
 
 d3.json("/sensor", function (error, data) { 
-          d3.select("#dashboard").append("div").attr("class","sensor").attr("id","status").html(data[0]) 
-          d3.select("#dashboard").append("div").attr("class","sensor").attr("id","presion").html(data[1][1]) 
+          d3.select("#dashboard").append("div").attr("class","sensor").attr("id","status").html("Sensor:" + data[0]) 
+          d3.select("#dashboard").append("div").attr("class","sensor").attr("id","presion").html("Presión del sensor:" + data[1][1]) 
 } );
 
 
