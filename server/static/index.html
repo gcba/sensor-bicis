@@ -79,6 +79,7 @@
 
     <h1>Estado del sensor de Bicicletas</h1>
     <div id=dashboard></div>
+    <div id=datostecnicos>Datos técnicos:</div>
 
     <footer class="footer">
       <hr class="footer-ba">
@@ -105,16 +106,16 @@ height = 300 - margin.top - margin.bottom;
 d3.text("/dia", function (error, texto) { 
     d3.select("#dashboard").append("div")
     .append("h3")
-    .html("Hoy:" + texto)
+    .html("Hoy: " + texto + " bicis")
 } );
 
 d3.text("/totemstatus", function (error, texto) { 
-          d3.select("#dashboard").append("div").html(texto) 
+          d3.select("#datostecnicos").append("div").html(texto) 
 } );
 
 d3.json("/sensor", function (error, data) { 
-          d3.select("#dashboard").append("div").attr("class","sensor").attr("id","status").html("Sensor:" + data[0]) 
-          d3.select("#dashboard").append("div").attr("class","sensor").attr("id","presion").html("Presión del sensor:" + data[1][1]) 
+          d3.select("#datostecnicos").append("div").attr("class","sensor").attr("id","status").html("Sensor:" + data[0]) 
+          d3.select("#datostecnicos").append("div").attr("class","sensor").attr("id","presion").html("Presión del sensor:" + data[1][1]) 
 } );
 
 
