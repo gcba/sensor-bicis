@@ -103,7 +103,9 @@ width = 960 - margin.left - margin.right,
 height = 300 - margin.top - margin.bottom;
 
 d3.text("/dia", function (error, texto) { 
-          d3.select("#dashboard").append("div").html("Bicis hoy:" + texto) 
+    d3.select("#dashboard").append("div")
+    .append("h3")
+    .html("Hoy:" + texto)
 } );
 
 d3.text("/totemstatus", function (error, texto) { 
@@ -147,7 +149,7 @@ function plotear(data,titulo,id) {
     // .ticks(10, "%");
 
     var plotdiv = d3.select("#dashboard").append("div").attr("class","plot").attr("id",id)
-    plotdiv.append("div").html(titulo);
+    plotdiv.append("div").append("h4").html(titulo);
     var svg = plotdiv.append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
