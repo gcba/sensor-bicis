@@ -5,7 +5,7 @@ from datetime import datetime
 #import ipdb
 import sqlite3
 
-DATABASE = 'base.db'
+DATABASE = '../base.db'
 db = sqlite3.connect(DATABASE)
 cur = db.cursor()
 
