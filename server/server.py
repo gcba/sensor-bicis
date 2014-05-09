@@ -9,7 +9,7 @@ import json
 
 app = Flask(__name__)
 app.debug=True
-DATABASE = '../analisis/base.db'
+DATABASE = '../base.db'
 lastPing = (None, None) 
 restartear = False
 
@@ -19,7 +19,8 @@ def page_not_found(error):
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    #return render_template('index.html')
+    return " "
 
 @app.route("/totem", methods=['POST', 'GET'])
 def totem():
@@ -97,6 +98,8 @@ def dashboard_data():
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
 
+    hoy = date.today().strftime("%Y-%m-%d")
+    maniana = (date.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 
     #promedio x dia de la semana mes actual:
     queries={}
@@ -104,29 +107,29 @@ def dashboard_data():
     queries= {
         '1prom_porhora_hoy': {
             'name':'Bicis por hora hoy',
-            'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y-%m-%d",millis) = strftime("%Y-%m-%d", date('now','localtime')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
+            'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where millis > "{desde}" and millis < "{hasta}"  group by strftime("%Y-%m-%d-%H",millis)) group by hora;""".format(desde=hoy, hasta=maniana)
         },
 
-        '2diasemana_actual' : {
-            'name':"Ultimos 7 dias",
-            'q':"""select case cast (strftime('%w', millis) as integer)  when 0 then 'dom' when 1 then 'lu' when 2 then 'mar' when 3 then 'mi' when 4 then 'jue' when 5 then 'vi' when 6 then 'sa' else '???' end as  dow , count(*)  from bicis where (julianday("now") - julianday(millis)) < 10  group by dow order by millis"""
-        },
-        '3prom_diario_mensual' : {
-             'name' : "Cantidad de bicis por día en los ultimos meses", 
-             'q':"""select mes, avg(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where date(millis) > "2012" group by strftime("%Y-%m-%d",millis)) group by mes;"""
-        },
+        # '2diasemana_actual' : {
+        #     'name':"Ultimos 7 dias",
+        #     'q':"""select case cast (strftime('%w', millis) as integer)  when 0 then 'dom' when 1 then 'lu' when 2 then 'mar' when 3 then 'mi' when 4 then 'jue' when 5 then 'vi' when 6 then 'sa' else '???' end as  dow , count(*)  from bicis where (julianday("now") - julianday(millis)) < 10  group by dow order by millis"""
+        # },
+        # '3prom_diario_mensual' : {
+        #      'name' : "Cantidad de bicis por día en los ultimos meses", 
+        #      'q':"""select mes, avg(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where date(millis) > "2012" group by strftime("%Y-%m-%d",millis)) group by mes;"""
+        # },
 
 
-        '4prom_porhora_anioactual': {
-            'name':'Promedio por hora del día',
-            'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y",millis) = strftime("%Y", date('now')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
-        },
+        # '4prom_porhora_anioactual': {
+        #     'name':'Promedio por hora del día',
+        #     'q': """select hora, avg(avg_ct) from (select strftime("%H",millis) hora , count(*) avg_ct from bicis where strftime("%Y",millis) = strftime("%Y", date('now')) group by strftime("%Y-%m-%d-%H",millis)) group by hora;"""
+        # },
 
 
-        '5totales_mensual': {
-            'name':"Bicis por mes",
-            'q': """select mes, sum(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where strftime("%Y",millis) >= "2013" group by strftime("%Y-%m-%d",millis)) group by mes;"""
-        },
+        # '5totales_mensual': {
+        #     'name':"Bicis por mes",
+        #     'q': """select mes, sum(avg_ct) from (select strftime("%Y-%m",millis) mes , count(*) avg_ct from bicis where strftime("%Y",millis) >= "2013" group by strftime("%Y-%m-%d",millis)) group by mes;"""
+        # },
 
         # 'prom_porhora_historico': {
         #     'name':"promedio por hora, historico",
@@ -135,9 +138,10 @@ def dashboard_data():
     }
 
     data = [ (k, v['name'], cur.execute(v['q']).fetchall() ) for (k,v) in sorted(queries.iteritems())]
-    return json.dumps(data)
+    print  cur.execute(v['q']).fetchall()  
     cur.close() 
     db.close()
+    return json.dumps(data)
 
 
 
