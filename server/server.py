@@ -3,7 +3,7 @@
 
 import sqlite3
 #import ipdb
-from datetime import datetime,timedelta
+from datetime import date,datetime,timedelta
 from flask import Flask, render_template, request, g
 import json
 
@@ -23,31 +23,44 @@ def index():
 
 @app.route("/totem", methods=['POST', 'GET'])
 def totem():
-    db = sqlite3.connect(DATABASE)
-    cur = db.cursor()
-    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now','localtime'));").fetchall()[0][0]
-    anio = 13 + cur.execute("select count(*) from bicis where strftime('%Y',millis)=strftime('%Y', date('now','localtime'));").fetchall()[0][0]/7500
+    sdia = dia() 
+    sanio = str(13 + int(anio()) / 7500)
     global lastPing
     lastPing = (request.remote_addr, datetime.now())
     global restartear
+    print sanio, sdia
     if int(datetime.now().strftime("%H%M%S")) < 1:
         restartear = True
-    if restartear == False:
-        return "#####" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
-    else:
+
+    restByte = "#"
+    if restartear :
+        restByte = "R"
         restartear = False
-        return "####R" + " " * (5-len(str(dia))) + str(dia) + "0" * (2-len(str(anio))) + str(anio)
+            
+    return  "####"+ restByte + " " * (5-len(sdia)) + sdia + "0" * (2-len(sanio)) + str(sanio)
+
+def bicisentre(desde,hasta):
+    db = sqlite3.connect(DATABASE)
+    cur = db.cursor()
+    q = "select count(*) from bicis where millis > '{desde}' and millis < '{hasta}' ;".format(desde=desde,hasta=hasta)
+    print q
+    total = cur.execute(q).fetchall()[0][0]
     cur.close() 
     db.close()
+    return str(total)
+   
+
+@app.route("/anio", methods=['POST', 'GET'])
+def anio():
+    este = date(date.today().year,1,1).strftime('%Y-%m-%d')
+    proximo = date(date.today().year + 1 ,1,1).strftime('%Y-%m-%d')
+    return bicisentre(este,proximo) 
 
 @app.route("/dia", methods=['POST', 'GET'])
 def dia():
-    db = sqlite3.connect(DATABASE)
-    cur = db.cursor()
-    dia = cur.execute("select count(*) from bicis where strftime('%Y%m%d',millis)=strftime('%Y%m%d', date('now','localtime'));").fetchall()[0][0]
-    return str(dia)
-    cur.close() 
-    db.close()
+    hoy = date.today().strftime("%Y-%m-%d")
+    maniana = (date.today() + timedelta(days=1)).strftime('%Y-%m-%d')
+    return bicisentre(hoy,maniana) 
 
 @app.route("/sensor", methods=['POST', 'GET'])
 def sensor():
