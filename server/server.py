@@ -11,6 +11,9 @@ app = Flask(__name__)
 app.debug=True
 DATABASE = '../base.db'
 lastPing = (None, None) 
+#ultima vez que consultamos el total de bicis de anio (ayer):
+lastAnio = datetime.combine(date.today() - timedelta(1), datetime.min.time())
+bicisAnio = 0 
 restartear = False
 
 @app.errorhandler(404)
@@ -29,7 +32,6 @@ def totem():
     global lastPing
     lastPing = (request.remote_addr, datetime.now())
     global restartear
-    print sanio, sdia
     if int(datetime.now().strftime("%H%M%S")) < 1:
         restartear = True
 
@@ -44,7 +46,6 @@ def bicisentre(desde,hasta):
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
     q = "select count(*) from bicis where millis > '{desde}' and millis < '{hasta}' ;".format(desde=desde,hasta=hasta)
-    print q
     total = cur.execute(q).fetchall()[0][0]
     cur.close() 
     db.close()
@@ -53,9 +54,15 @@ def bicisentre(desde,hasta):
 
 @app.route("/anio", methods=['POST', 'GET'])
 def anio():
-    este = date(date.today().year,1,1).strftime('%Y-%m-%d')
-    proximo = date(date.today().year + 1 ,1,1).strftime('%Y-%m-%d')
-    return bicisentre(este,proximo) 
+    # implementamos una especie de cache porque el query es pesado
+    global lastAnio, bicisAnio
+    ahora = datetime.now()
+    if ( ahora - lastAnio ).total_seconds() > 60*60*12 :
+        lastAnio = ahora
+        este = date(date.today().year,1,1).strftime('%Y-%m-%d')
+        proximo = date(date.today().year + 1 ,1,1).strftime('%Y-%m-%d')
+        bicisAnio = bicisentre(este,proximo) 
+    return bicisAnio
 
 @app.route("/dia", methods=['POST', 'GET'])
 def dia():
@@ -138,7 +145,6 @@ def dashboard_data():
     }
 
     data = [ (k, v['name'], cur.execute(v['q']).fetchall() ) for (k,v) in sorted(queries.iteritems())]
-    print  cur.execute(v['q']).fetchall()  
     cur.close() 
     db.close()
     return json.dumps(data)
