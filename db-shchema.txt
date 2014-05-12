@@ -1,0 +1,6 @@
+CREATE TABLE bicis(id INT, dateTime INT, millis INT, pasadas INT);
+CREATE TABLE log(id INT, id_sensor INT, dateTime INT, millis INT, valor INT);
+CREATE TABLE presion(dateTime INT, presion INT);
+CREATE TABLE sensores(id_sensor INT, id_dispositivo INT, descripcion TEXT );
+CREATE INDEX ibicis_millis on bicis (millis);
+CREATE INDEX ipresion_dateTime_desc on presion (dateTime desc);
