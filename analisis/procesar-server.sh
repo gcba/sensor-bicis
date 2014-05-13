@@ -15,7 +15,6 @@ fi
 
 nc -v -d $SENSOR_HOST 54321 \
 | awk '( (NR > 100) && (NF == 3) && ($0 !~ /[A-Za-z]/)  ) { print }' \
-| tee -a /tmp/valores-sensor.csv \
 | ./procesar.py \
 | awk '{ if ((NR % 1000000)==0 || $0 ~ /bici/ ){ print $0;}}'
 
