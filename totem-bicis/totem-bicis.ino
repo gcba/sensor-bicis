@@ -182,6 +182,12 @@ void loop() {
       if (un == 'R'){
         resetear();
       }
+      if (un == 'A'){
+        digitalWrite(5,LOW);
+      }
+      if (un == 'E'){
+        digitalWrite(5,HIGH);
+      }
       lastSuccess = millis();
     }
   }
