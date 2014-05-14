@@ -15,6 +15,8 @@ lastPing = (None, None)
 lastAnio = datetime.combine(date.today() - timedelta(1), datetime.min.time())
 bicisAnio = 0 
 restartear = False
+apagar = False
+encender = False
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -32,7 +34,7 @@ def totem():
     print "queries listos"
     global lastPing
     lastPing = (request.remote_addr, datetime.now())
-    global restartear
+    global restartear,apagar,encender
     if int(datetime.now().strftime("%H%M%S")) < 1:
         restartear = True
 
@@ -40,6 +42,13 @@ def totem():
     if restartear :
         restByte = "R"
         restartear = False
+
+    if encender:
+        restByte = "E"
+
+    if apagar:
+        restByte = "A"
+
             
     print "fin"
     return  "####"+ restByte + " " * (5-len(sdia)) + sdia + "0" * (2-len(sanio)) + str(sanio)
@@ -92,6 +101,21 @@ def restartotem():
     global restartear
     restartear = True
     return str("Restaring in 5...")
+
+@app.route("/apagar", methods=['POST', 'GET'])
+def restartotem():
+    global apagar
+    apagar = True
+    encender = False
+    return str("apagado")
+
+@app.route("/encender", methods=['POST', 'GET'])
+def restartotem():
+    global encender
+    encender = True
+    apagar = False
+    return str("encendido")
+
 
 @app.route("/semana", methods=['POST', 'GET'])
 def semana():
