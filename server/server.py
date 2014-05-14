@@ -29,6 +29,7 @@ def index():
 
 @app.route("/totem", methods=['POST', 'GET'])
 def totem():
+    print "procesando /totem"
     sdia = dia() 
     sanio = str(13 + int(anio()) / 7500)
     print "queries listos"
@@ -191,6 +192,6 @@ def totemstatus():
     return 'Totem fuera de servicio. Hace mas de 30 segundos que no se conecta. Contactar a DGGOBE', 200
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, threaded=False, use_reloader=False)
+    app.run(host="0.0.0.0", port=8080, threaded=True, use_reloader=False)
 
 #cur.execute("CREATE TABLE bicis(id INT, dateTime INT, millis INT, pasadas INT)")
