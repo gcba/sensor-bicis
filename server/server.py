@@ -46,9 +46,12 @@ def totem():
 
     if encender:
         restByte = "E"
+       # encender = False
+        
 
     if apagar:
         restByte = "A"
+       # apagar =  False
 
             
     print "fin"
@@ -104,15 +107,15 @@ def restartotem():
     return str("Restaring in 5...")
 
 @app.route("/apagar", methods=['POST', 'GET'])
-def restartotem():
+def apagartotem():
     global apagar
     apagar = True
     encender = False
     return str("apagado")
 
 @app.route("/encender", methods=['POST', 'GET'])
-def restartotem():
-    global encender
+def encendertotem():
+    global encender,apagar
     encender = True
     apagar = False
     return str("encendido")
