@@ -30,7 +30,6 @@
 *.db
 *.csv
 valores*
-analisis/*
 */.dep
 # OS generated files #
 ######################
