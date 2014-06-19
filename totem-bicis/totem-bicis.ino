@@ -18,9 +18,11 @@ int i = 0;
 char readString[15] = "";
 
 byte mac[] =  { 0x90, 0xA2, 0xDA, 0x0D, 0x4E, 0xe0 };
+IPAddress ip(172,29,41,10);
+IPAddress gateway(172,29,41,2);
 IPAddress mask(255,255,255,0);
 EthernetClient client;
-byte server[] = { 192,168,0,1}; 
+byte server[] = { 172,29,41,12 }; 
 unsigned long lastConnectionTime = 0;
 unsigned long lastBarraTime = 0;
 unsigned long lastSuccess = 0;
@@ -165,6 +167,7 @@ void loop() {
   if (chr=='#') {
         readString[0] = chr;
         //lleno el buffer de lectura
+        // Kernighan y Ritchie estarían orgullosos
         for (i=1;client.available() && i<14; readString[i++]=client.read() )
             delay(1); 
 
