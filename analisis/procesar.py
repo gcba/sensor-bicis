@@ -9,9 +9,10 @@ feedgnuplot --stream  1 --lines --dataid --autolegend -xlen 5000
 from filter import Filter
 import dateutil.parser
 import argparse
-import datetime
+from datetime import datetime,timedelta
 import zmq
 import sys
+import select
 
 if __name__ == "__main__":
 
@@ -31,10 +32,12 @@ if __name__ == "__main__":
     if vars(args)['inicio']:
         inicio = dateutil.parser.parse(args.inicio)
     else:
-        inicio = datetime.datetime.now()
+        inicio = datetime.now()
 
     f=Filter()
     f.umbral = 5 
+    last_time = datetime.now()
+    pressure_report_interval = timedelta(minutes=3)
     for e in sys.stdin :
         try:
             t = int(e.split()[1])
@@ -43,9 +46,9 @@ if __name__ == "__main__":
             #strtime = (inicio+datetime.timedelta(milliseconds=int(t)) ).strftime('%m-%d %H:%M:%S') 
             # segundos con fraccion
             if vars(args)['inicio']:
-                strtime = "%s" %  (inicio+datetime.timedelta(milliseconds=int(t)) )
+                strtime = "%s" %  (inicio+timedelta(milliseconds=int(t)) )
             else:
-                strtime = "%s" %  (datetime.datetime.now())
+                strtime = "%s" %  (datetime.now())
 
         except:
             continue
@@ -69,6 +72,12 @@ if __name__ == "__main__":
             sys.stderr.writelines("bicis: %s\n" % f.bicis)
             sys.stderr.writelines("bicis: %s\n" % f.bicis1)
             #sys.stderr.writelines("prev: %s\n" % f.prevDetects)
+        
+        now = datetime.now()
+        if ( (now - last_time ) > pressure_report_interval) : 
+            last_time = now
+            socket.send("ecobici1 presion %s" % (e) )
+
 
 
 
